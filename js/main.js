@@ -1,12 +1,13 @@
 /* Airborne Puma -- boot, title, the loop, and everything between.
  *
- * The greykit.games boot and title (the canon @gk-title block, STANDARD.md
- * §3, wired as PumaApproach wires it), then a mission: the briefing, the
- * fly-over, the ground, the debrief. The engine runs at fifty steps a second
+ * The greykit.games boot (the canon @gk-title block, STANDARD.md §3), then
+ * the game's own title: the battlefield, the name, the menu (§6's items and
+ * keys, read by the block's own key lookup), the credit. Then a mission: the briefing, the fly-over, the ground,
+ * the debrief. The engine runs at fifty steps a second
  * of game time (or forty, or sixty: Settings), whatever the screen's rate. */
 "use strict";
 (() => {
-  const E = AP.Engine, C = AP.C, UI = AP.UI, $ = id => document.getElementById(id);
+  const E = AP.Engine, C = AP.C, UI = AP.UI, esc = AP.esc, $ = id => document.getElementById(id);
   const game = AP.game = { mode: "boot", S: null, run: null, ui: { mapView: false, mapY: null, aids: {} }, step: 20, acc: 0, last: 0, overAt: 0, titleT: 0 };
 
   /* ---- sound on and off (STANDARD.md §8) ---- */
@@ -50,20 +51,52 @@
       ],
     };
   }
+  /* the title: the battlefield behind, the name, and the menu in a panel of
+   * its own: a key, the item, what it says about itself; Settings, Help and
+   * About on one line under the rest */
+  function titleHTML(cfg) {
+    const items = cfg.items.filter(Boolean), gap = items.indexOf("gap");
+    const main = items.slice(0, gap), util = items.slice(gap + 1);
+    let i = 0;
+    const btn = (it, big) => `<button data-act="${it.act}" class="pr${it.act === cfg.primary ? " dflt" : ""}" style="--i:${i++}"><kbd>${esc(it.key)}</kbd><span class="lbl">${esc(it.label)}</span>` +
+      (big && it.meta ? `<span class="meta">${esc(it.meta)}</span>` : "") + "</button>";
+    const [a, b] = cfg.name.split(" ");
+    return `<div class="ap-title">
+      <canvas class="ap-scene" aria-hidden="true"></canvas><div class="ap-shade" aria-hidden="true"></div>
+      <main>
+        <h1 class="ap-mark" aria-label="${esc(cfg.name)}"><span>${esc(a)}</span> <span class="puma">${esc(b)}</span></h1>
+        <p class="ap-sub">Behind Enemy Lines</p>
+        <nav class="ap-menu" aria-label="Main menu">${main.map(it => btn(it, true)).join("")}<div class="util">${util.map(it => btn(it, false)).join("")}</div></nav>
+      </main>
+      <footer class="ap-foot"><span class="gk-credit">${UI.CREDIT}</span></footer>
+    </div>`;
+  }
   function openTitle() {
     game.mode = "title";
     const el = $("title");
-    el.innerHTML = titleHTML(Object.assign(titleCfg(), { scene: true }));
-    el.querySelector("h1").insertAdjacentHTML("afterend", '<p class="gk-sub">Twelve missions behind enemy lines</p>');
-    const cv = document.createElement("canvas");
-    el.querySelector(".scene").appendChild(cv);
-    sizeScene(cv);
+    el.innerHTML = titleHTML(titleCfg());
     el.hidden = false;
     $("game").hidden = true;
+    sizeScene();
     document.body.classList.add("on-title");
   }
-  function sizeScene(cv) { const k = 3; cv.width = Math.ceil(innerWidth / k); cv.height = Math.ceil(innerHeight / k); }
-  game.refreshTitle = () => { if (game.mode !== "title") return; openTitle(); revealTitle(); };
+  /* the picture at the play screen's own scale: whole screen pixels to one of its */
+  function sizeScene() {
+    const cv = document.querySelector("#title .ap-scene");
+    if (!cv) return;
+    const k = Math.max(2, Math.round(Math.min(innerWidth / AP.K.VW, innerHeight / AP.K.VH)));
+    cv.width = Math.ceil(innerWidth / k); cv.height = Math.ceil(innerHeight / k);
+  }
+  /* the entrance: the menu prints in, the default has the focus */
+  function revealTitle(print = true) {
+    const t = document.querySelector("#title .ap-title");
+    if (!t) return;
+    /* a fresh arrival: the menu prints in, and the picture's Osprey makes its pass */
+    if (print) { t.classList.add("ap-print"); game.titleT = 0; }
+    const b = t.querySelector(".ap-menu .dflt") || t.querySelector(".ap-menu button");
+    if (b) b.focus({ preventScroll: true });
+  }
+  game.refreshTitle = () => { if (game.mode !== "title") return; openTitle(); revealTitle(false); };
   game.toTitle = () => {
     UI.close(true);
     game.S = null; game.run = null; game.ui.mapView = false;
@@ -85,7 +118,7 @@
   function titleKey(ev) {
     const k = ev.key.length === 1 ? ev.key.toLowerCase() : ev.key;
     if (k === "Enter" || k === " " || k === "Tab" || k === "Shift") return;
-    const menu = document.querySelector("#title .gk-menu"), hit = menu && titleKeyButton(menu, k);
+    const menu = document.querySelector("#title .ap-menu"), hit = menu && titleKeyButton(menu, k);
     if (hit) { ev.preventDefault(); titleAct(hit.dataset.act); return; }
     if (menu) titleArrow(menu, ev);
   }
@@ -238,8 +271,9 @@
     requestAnimationFrame(frame);
     const dt = Math.min(100, now - game.last); game.last = now;
     if (game.mode === "title") {
-      const cv = document.querySelector("#title .scene canvas");
-      if (cv) AP.Render.titleScene(cv, game.titleT++);
+      const cv = document.querySelector("#title .ap-scene");
+      /* the picture counts sixtieths of a second, whatever the screen's rate */
+      if (cv && !UI.sheet) { AP.Render.titleScene(cv, game.titleT); game.titleT += dt * 0.06; }
       return;
     }
     if (!game.S || (game.mode !== "play" && game.mode !== "debrief")) return;
@@ -305,46 +339,74 @@
   document.addEventListener("pointerdown", () => { AP.SFX.unlock(); if (game.mode === "title" && !AP.SFX.tune && !SMALL.matches) AP.SFX.startTune(); }, true);
 
   /* the mouse, for Mouse aim */
-  function mouseAt(ev) { const r = $("screen").getBoundingClientRect(); AP.Input.mouse.x = (ev.clientX - r.left) / r.width * 320; AP.Input.mouse.y = (ev.clientY - r.top) / r.height * 200; }
+  function mouseAt(ev) { const r = $("screen").getBoundingClientRect(); AP.Input.mouse.x = (ev.clientX - r.left) / r.width * AP.K.VW; AP.Input.mouse.y = (ev.clientY - r.top) / r.height * AP.K.VH; }
   $("screen").addEventListener("pointermove", ev => { if (ev.pointerType !== "mouse") return; mouseAt(ev); AP.Input.mouse.over = true; AP.Input.mouse.used = true; });
   $("screen").addEventListener("pointerleave", () => { AP.Input.mouse.over = false; AP.Input.mouse.down = false; });
   $("screen").addEventListener("pointerdown", ev => { if (ev.pointerType !== "mouse" || ev.button !== 0) return; mouseAt(ev); AP.Input.mouse.used = true; AP.Input.mouse.over = true; AP.Input.mouse.down = true; });
   addEventListener("pointerup", ev => { if (ev.pointerType === "mouse") AP.Input.mouse.down = false; });
   $("screen").addEventListener("contextmenu", ev => ev.preventDefault());
 
+  document.addEventListener("pointerover", ev => {
+    if (ev.pointerType !== "mouse") return;
+    const b = ev.target.closest && ev.target.closest("button:not(:disabled), summary");
+    if (!b || b === document.activeElement || !b.closest(".ap-sheet, .ap-ask, #title") || b.closest(".sh-head")) return;
+    const a = document.activeElement;
+    if (a && a.matches("input")) return;
+    if (document.querySelector(".ap-ask") && !b.closest(".ap-ask")) return;
+    b.focus({ preventScroll: true });
+  });
   $("title").addEventListener("click", ev => { const b = ev.target.closest("[data-act]"); if (b) titleAct(b.dataset.act); });
   $("snd").addEventListener("click", () => game.toggleMute());
   $("pausebtn").addEventListener("click", () => game.pause());
 
   /* ---- the stage, as big as fits, square pixels ---- */
   function fit() {
-    const s0 = Math.min((innerWidth - 16) / 320, (innerHeight - 16) / 200), si = Math.floor(s0);
-    const s = si >= 2 && si / s0 > 0.8 ? si : s0;
-    const st = $("stage");
-    st.style.width = Math.floor(320 * s) + "px"; st.style.height = Math.floor(200 * s) + "px";
+    const VW = AP.K.VW, VH = AP.K.VH, s0 = Math.min(innerWidth / VW, innerHeight / VH), si = Math.floor(s0);
+    const s = si >= 2 && si / s0 > 0.86 ? si : s0;
+    const st = $("stage"), w = Math.floor(VW * s), h = Math.floor(VH * s);
+    st.style.width = w + "px"; st.style.height = h + "px";
+    st.style.left = Math.floor((innerWidth - w) / 2) + "px"; st.style.top = Math.floor((innerHeight - h) / 2) + "px";
   }
-  addEventListener("resize", () => { fit(); const cv = document.querySelector("#title .scene canvas"); if (cv) sizeScene(cv); });
+  addEventListener("resize", () => { fit(); sizeScene(); });
 
   /* ---- boot ---- */
   function boot() {
     AP.buildArt(AP.prefs.palette);
     AP.Render.init($("screen"));
     game.applySpeed(); game.applyLook(); syncAids(); syncSound();
-    injectTitleCSS();
+    injectTitleCSS();     /* the boot's; the title and the sheets are css/airbornepuma.css */
     fit();
     const q = new URLSearchParams(location.search);
     if (q.has("play")) {
-      /* debug: ?play=<mission>&diff=<0-3>&seed=<n>&land=1 straight into a practice mission */
+      /* debug: ?play=<mission>&diff=<0-3>&seed=<n>&land=1&at=<x>,<y>&alert=<0-2> straight into a practice mission */
       const id = AP.MISSION[q.get("play")] ? q.get("play") : "depot";
       const run = { mission: id, diff: +(q.get("diff") || 1), seed: +(q.get("seed") || 1), rangerId: null, campaign: false, pods: AP.MISSION[id].pods.map(p => p.slice()) };
       const S = E.newMission({ mission: id, diff: run.diff, seed: run.seed, pods: run.pods, opts: { autoCarbine: AP.aid("autoCarbine"), podTake: AP.aid("podTake"), ffDrop: AP.aid("ffDrop") } });
       if (q.has("land")) AP.skipDrop(S);
+      /* debug, for screenshots: &at=x,y puts the ranger there, &alert=1 or 2 raises the alarm */
+      if (q.has("at")) { const [x, y] = q.get("at").split(",").map(Number); if (isFinite(x) && isFinite(y)) { S.player.x = x; S.player.y = y; } }
+      if (q.has("alert")) S.alert.lv = AP.clamp(+q.get("alert") || 0, 0, 2);
       startPlay(S, run);
+      /* &pause=1 opens on the pause menu */
+      if (q.has("pause")) game.pause();
     } else {
-      const run = SMALL.matches ? { finish: async () => {}, cancel() {} } : runBoot({ lines: [bootReloadLine(), "sixteen colours: ok", "osprey on station"] });
+      const run = SMALL.matches ? { finish: async () => {}, cancel() {} } : runBoot({ lines: [bootReloadLine(), "terrain: ok", "osprey on station"] });
       openTitle();
       const saved = AP.loadMission(), n = AP.Roster.list().length;
-      run.finish([saved ? "a mission in progress" : n ? `${n} ranger${n === 1 ? "" : "s"} on the roster` : "roster: empty"]).then(() => revealTitle());
+      run.finish([saved ? "a mission in progress" : n ? `${n} ranger${n === 1 ? "" : "s"} on the roster` : "roster: empty"]).then(() => {
+        revealTitle();
+        /* debug, for screenshots: ?sheet=roster opens the veteran roster */
+        if (q.get("sheet") === "roster") UI.roster();
+        /* ?demo=roster or ?demo=kia: three made-up veterans, in memory only (never saved), for the portraits */
+        const demo = q.get("demo");
+        if (demo) {
+          const d = AP.Roster.data, mk = (name, status, rank, merit, awards) => ({ id: 9000 + d.rangers.length + d.memorial.length, name, created: 0, status, merit, rank, awards: awards.map(code => ({ code })), log: [{ mission: "depot", result: status === "kia" ? "kia" : status === "captured" ? "captured" : "retrieved", goal: status === "active", merit: 120 }], campaign: null, colonel: false });
+          d.rangers.push(mk("Maw", "active", 5, 1180, ["COM1", "BSTR", "SSTR"]), mk("Tuft", "captured", 2, 340, ["COM1"]));
+          const fallen = mk("Ember", "kia", 3, 610, ["COM1", "COM2"]); d.memorial.push(fallen);
+          if (demo === "roster") UI.roster();
+          if (demo === "kia") UI.debrief({ rangerId: fallen.id, mission: "depot", diff: 1, campaign: false, pods: AP.MISSION.depot.pods }, { mission: "depot", diff: 1, result: "kia", goal: false, cause: "sniper", lines: [["Soldiers", 40]], mult: 0.75, total: 30 }, { kia: true });
+        }
+      });
     }
     game.last = performance.now();
     requestAnimationFrame(frame);

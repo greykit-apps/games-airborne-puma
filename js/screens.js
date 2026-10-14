@@ -1,7 +1,7 @@
-/* Airborne Puma -- the screens with words on them, in the greykit.games
- * title's own sheet (the canon .gk-sheet look), with the game's own pixel art
- * inside: the ranger's portrait, rank insignia, ribbons, and the ground
- * itself from the map generator.
+/* Airborne Puma -- the screens with words on them, each a whole C64 screen
+ * of its own (css/airbornepuma.css): a title bar in reverse video, our 8x8
+ * type, and the game's own pixel art inside: the ranger's portrait, rank
+ * insignia, ribbons, and the ground itself from the map generator.
  *
  * The 1987 order: report to the personnel officer (a practice ranger, or a
  * veteran from the roster), pick a mission, set the difficulty, read the
@@ -12,31 +12,34 @@
 (() => {
   const esc = AP.esc, C = AP.C;
   const UI = AP.UI = { sheet: null, aidOpen: false };
-  const CREDIT = 'Built by <a href="https://greykit.com/" target="_blank" rel="noopener">greykit.com</a>';
+  const CREDIT = UI.CREDIT = 'Built by <a href="https://greykit.com/" target="_blank" rel="noopener">greykit.com</a>';
   const ITEM = { mag: "Magazine", gren: "Grenade", law: "LAW rocket", bomb: "Time bomb", aid: "First aid" };
   const ITEMS = { mag: ["magazine", "magazines"], gren: ["grenade", "grenades"], law: ["LAW rocket", "LAW rockets"], bomb: ["time bomb", "time bombs"], aid: ["first aid kit", "first aid kits"] };
   const RESULT = { retrieved: "Retrieved", captured: "Captured", kia: "Killed in action", aborted: "Aborted" };
   const ZONE_ORDER = ["desert", "temperate", "arctic"];
-  const X_ICON = '<svg viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="M2 2 L10 10 M10 2 L2 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"/></svg>';
   const img = (c, w, h, cls = "px", alt = "") => `<img class="${cls}" src="${AP.artURL(c)}" width="${w}" height="${h}" alt="${esc(alt)}">`;
 
-  /* ---- the sheet ---- */
-  UI.open = (title, { tabs, html, onClick, onClose, onKey, back, tab = 0, wide = false, closable = true }) => {
+  /* the title bar's two icons, drawn: a chevron back, a cross */
+  const ICON_BACK = '<svg class="ic" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="M7.5 2 L3.5 6 L7.5 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="square"/></svg>';
+  const ICON_X = '<svg class="ic" viewBox="0 0 12 12" width="12" height="12" aria-hidden="true"><path d="M3 3 L9 9 M9 3 L3 9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="square"/></svg>';
+  /* ---- the sheet: a screen of its own, over whatever was showing; or, with
+   * popup, a window over it, the screen behind dithered dark ---- */
+  UI.open = (title, { tabs, html, onClick, onClose, onKey, back, tab = 0, wide = false, closable = true, popup = false }) => {
     UI.close(true);
     const el = document.createElement("div");
-    el.className = "gk-sheet ap-sheet" + (wide ? " wide" : "");
+    el.className = "ap-sheet " + (popup ? "ap-pop" : "full") + (wide ? " wide" : "");
     el.setAttribute("role", "dialog"); el.setAttribute("aria-modal", "true"); el.setAttribute("aria-label", title);
     const draw = () => {
-      el.innerHTML = '<div class="gk-box"><div class="gk-head">' + (back ? '<button data-back class="back" aria-label="Back">Back</button>' : "") + "<h2>" + esc(title) + "</h2>" +
-        (closable ? '<button data-x aria-label="Close">' + X_ICON + "</button>" : "") + "</div>" +
-        (tabs ? '<div class="gk-tabs" role="tablist" aria-label="' + esc(title) + '">' + tabs.map(([t], i) => '<button role="tab" id="tab-' + i + '" data-tab="' + i + '" aria-selected="' + (i === tab) + '" aria-controls="tabpanel" tabindex="' + (i === tab ? 0 : -1) + '">' + esc(t) + "</button>").join("") + "</div>" : "") +
-        '<div class="gk-body"' + (tabs ? ' id="tabpanel" role="tabpanel" aria-labelledby="tab-' + tab + '" tabindex="0"' : "") + ">" + (tabs ? tabs[tab][1] : html()) + "</div></div>";
+      el.innerHTML = '<div class="' + (popup ? "ap-win" : "sh-box") + '"><header class="sh-head">' + (back ? '<button data-back title="Back (Esc)">' + ICON_BACK + "Back</button>" : "") + "<h2>" + esc(title) + "</h2>" +
+        (closable && !back && !popup ? '<button data-x title="Close (Esc)">' + ICON_X + "Close</button>" : "") + "</header>" +
+        (tabs ? '<div class="sh-tabs" role="tablist" aria-label="' + esc(title) + '">' + tabs.map(([t], i) => '<button role="tab" id="tab-' + i + '" data-tab="' + i + '" aria-selected="' + (i === tab) + '" aria-controls="tabpanel" tabindex="' + (i === tab ? 0 : -1) + '">' + esc(t) + "</button>").join("") + "</div>" : "") +
+        '<div class="sh-body"' + (tabs ? ' id="tabpanel" role="tabpanel" aria-labelledby="tab-' + tab + '" tabindex="0"' : "") + '><div class="sh-in">' + (tabs ? tabs[tab][1] : html()) + "</div></div></div>";
     };
     draw();
-    const api = { refresh: () => { const b = el.querySelector(".gk-body"), y = b.scrollTop, f = document.activeElement && document.activeElement.dataset; draw(); el.querySelector(".gk-body").scrollTop = y; if (f) for (const k of ["set", "slot", "act"]) if (f[k]) { const n = el.querySelector(`[data-${k}="${f[k]}"]`); if (n) n.focus({ preventScroll: true }); } }, close: () => UI.close(), el };
+    const api = { refresh: () => { const b = el.querySelector(".sh-body"), y = b.scrollTop, f = document.activeElement && document.activeElement.dataset; draw(); el.querySelector(".sh-body").scrollTop = y; if (f) for (const k of ["set", "slot", "act"]) if (f[k]) { const n = el.querySelector(`[data-${k}="${f[k]}"]`); if (n) n.focus({ preventScroll: true }); } }, close: () => UI.close(), el };
     const setTab = i => { tab = (i + tabs.length) % tabs.length; draw(); el.querySelector('[data-tab="' + tab + '"]').focus(); };
     el.addEventListener("click", ev => {
-      if (ev.target === el && closable) return back ? goBack() : UI.close();
+      if (popup && ev.target === el && closable) return UI.close();
       const b = ev.target.closest("button"); if (!b) return;
       AP.SFX.play("menu");
       if (b.hasAttribute("data-x")) return UI.close();
@@ -50,7 +53,7 @@
     document.body.appendChild(el);
     UI.sheet = { el, onClose, onKey, closable, back: back ? goBack : null, tabs: tabs ? setTab : null, tabAt: () => tab };
     for (const id of ["game", "title"]) { const n = document.getElementById(id); if (n) n.inert = true; }
-    (el.querySelector("[autofocus]") || el.querySelector(".gk-body .primary") || el.querySelector('[role="tab"][aria-selected="true"]') || el.querySelector(".gk-body button") || el.querySelector("button")).focus({ preventScroll: true });
+    (el.querySelector("[autofocus]") || el.querySelector(".sh-body .primary") || el.querySelector('[role="tab"][aria-selected="true"]') || el.querySelector(".sh-body button") || el.querySelector("button")).focus({ preventScroll: true });
     return api;
   };
   UI.close = quiet => {
@@ -61,7 +64,27 @@
     if (s.onClose && !quiet) s.onClose();
     if (!quiet && AP.game.mode === "title") AP.game.refreshTitle();
   };
-  /* keys while a sheet is up: Escape goes back (or closes), Tab stays inside, arrows walk the tabs */
+  /* the arrows: from the focused control to the nearest one that way, by
+   * where they sit on the screen, so a grid walks as a grid and a list as a
+   * list. true when focus moved. */
+  UI.walk = (root, key) => {
+    const d = { ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0] }[key], a = document.activeElement;
+    if (!d || !a || !root.contains(a)) return false;
+    const box = n => { const r = n.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2, r }; }, o = box(a);
+    let best = null, bestS = Infinity;
+    for (const n of root.querySelectorAll("button:not(:disabled), summary")) {
+      if (n === a || n.offsetParent === null || n.getAttribute("role") === "tab" || n.closest(".sh-head")) continue;
+      const b = box(n), dx = b.x - o.x, dy = b.y - o.y, along = dx * d[0] + dy * d[1];
+      /* only what lies that way, past the edge of the one we are on */
+      if (along <= (d[0] ? o.r.width : o.r.height) / 4) continue;
+      const s = along + Math.abs(d[0] ? dy : dx) * 3;
+      if (s < bestS) { bestS = s; best = n; }
+    }
+    if (!best) return false;
+    best.focus({ preventScroll: true }); best.scrollIntoView({ block: "nearest" });
+    return true;
+  };
+  /* keys while a sheet is up: Escape goes back (or closes), Tab stays inside, arrows walk the tabs and the buttons */
   UI.key = ev => {
     const s = UI.sheet;
     if (s.onKey && s.onKey(ev)) return;
@@ -69,6 +92,7 @@
     if (s.tabs && document.activeElement && document.activeElement.getAttribute("role") === "tab" && (ev.key === "ArrowRight" || ev.key === "ArrowLeft")) {
       ev.preventDefault(); s.tabs(s.tabAt() + (ev.key === "ArrowRight" ? 1 : -1)); return;
     }
+    if (ev.key.startsWith("Arrow") && !(ev.target.closest && ev.target.closest("input")) && UI.walk(s.el, ev.key)) { ev.preventDefault(); return; }
     if (ev.key === "Tab") {
       const f = [...s.el.querySelectorAll('button:not(:disabled), input, summary, a[href], [tabindex]:not([tabindex="-1"])')].filter(n => n.offsetParent !== null);
       if (!f.length) return;
@@ -78,19 +102,20 @@
     }
   };
 
-  /* A question before something that cannot be undone. Cancel has the focus,
-   * so a stray Enter keeps things as they are; Escape and the backdrop cancel. */
-  UI.ask = (question, yes, title = "Are you sure?") => new Promise(resolve => {
+  /* A question before something that cannot be undone, in a window over the
+   * screen. Cancel has the focus, so a stray Enter keeps things as they are;
+   * Escape and the dithered backdrop cancel. */
+  UI.ask = (question, yes, title = yes + "?") => new Promise(resolve => {
     const back = document.activeElement;
     const el = document.createElement("div");
-    el.className = "gk-sheet ap-sheet ap-ask";
+    el.className = "ap-ask";
     el.setAttribute("role", "alertdialog"); el.setAttribute("aria-modal", "true"); el.setAttribute("aria-label", title);
-    el.innerHTML = '<div class="gk-box"><div class="gk-head"><h2>' + esc(title) + '</h2></div><div class="gk-body"><p>' + esc(question) +
+    el.innerHTML = '<div class="ap-win"><header class="sh-head"><h2>' + esc(title) + '</h2></header><div class="sh-body"><p>' + esc(question) +
       '</p><div class="row end"><button data-no class="primary">Cancel</button><button data-yes class="danger">' + esc(yes) + "</button></div></div></div>";
     const done = v => { document.removeEventListener("keydown", onKey, true); el.remove(); if (back && back.isConnected && back.focus) back.focus({ preventScroll: true }); resolve(v); };
     const onKey = ev => {
       if (ev.key === "Escape") { ev.preventDefault(); ev.stopPropagation(); done(false); return; }
-      if (ev.key === "Tab") { const bs = [...el.querySelectorAll("button")], i = bs.indexOf(document.activeElement); ev.preventDefault(); bs[(i + (ev.shiftKey ? -1 : 1) + bs.length) % bs.length].focus(); }
+      if (ev.key === "Tab" || ev.key === "ArrowLeft" || ev.key === "ArrowRight") { const bs = [...el.querySelectorAll("button")], i = bs.indexOf(document.activeElement); ev.preventDefault(); bs[(i + (ev.shiftKey || ev.key === "ArrowLeft" ? -1 : 1) + bs.length) % bs.length].focus(); }
       ev.stopPropagation();
     };
     el.addEventListener("click", ev => { if (ev.target === el) return done(false); const b = ev.target.closest("button"); if (b) done(b.hasAttribute("data-yes")); });
@@ -108,7 +133,7 @@
   const ribbons = (r, scale = 1) => r.awards.map(a => img(AP.ribbonArt(a.code), 26 * scale, 10 * scale, "px ribbon", AP.awardName(a.code))).join("");
   const statusOf = r => r.status === "captured" ? "held by the enemy" : r.status === "kia" ? "killed in action" : r.campaign && !r.campaign.done ? `campaign: mission ${r.campaign.next + 1} of 12` : `${r.log.length} mission${r.log.length === 1 ? "" : "s"}`;
   const rangerRow = (r, act) => `<li class="ranger ${r.status}">${portrait(r, 2)}<div class="who"><b>${esc(AP.rankName(r.rank))} ${esc(r.name)}</b>
-      <span class="gk-note">${r.merit} merit · ${statusOf(r)}</span><span class="ribbons">${ribbons(r)}</span></div>${insignia(r.rank, 1.5)}${act ? `<div class="act">${act}</div>` : ""}</li>`;
+      <span class="note">${r.merit} merit · ${statusOf(r)}</span><span class="ribbons">${ribbons(r, 2)}</span></div>${insignia(r.rank, 2)}${act ? `<div class="act">${act}</div>` : ""}</li>`;
 
   /* the installation, drawn from a generated map: the cards' pictures, cached */
   const thumbs = new Map();
@@ -127,10 +152,10 @@
       html: () => {
         const list = AP.Roster.list();
         return `${campaign ? `<p class="lede">A campaign is all twelve missions in the order your superiors set, at one difficulty, flown by one ranger. Only a campaign ranger can make Colonel, or earn the Medal of Honor.</p>` :
-          `<div class="practice">${portrait(null, 2)}<div><button class="primary" data-act="practice">Practice ranger</button><p class="gk-note">An average ranger from the ranks. Any mission, any difficulty; nothing is recorded.</p></div></div>`}
+          `<div class="practice">${portrait(null, 2)}<div><button class="primary" data-act="practice">Practice ranger</button><p class="note">An average ranger from the ranks. Any mission, any difficulty; nothing is recorded.</p></div></div>`}
           <h3>Veteran rangers</h3>
           ${list.length ? `<ul class="roster">${list.map(r => rangerRow(r, `<button data-assign="${r.id}" ${r.status === "captured" ? "disabled" : ""}>${r.status === "captured" ? "Held" : campaign ? (r.campaign && !r.campaign.done ? "Continue" : "Begin") : "Assign"}</button><button data-retire="${r.id}" class="quiet">Retire</button>`)).join("")}</ul>` :
-          `<p class="gk-note">No veterans yet. Enlist one: everything they do is recorded here, in this browser.</p>`}
+          `<p class="note">No veterans yet. Enlist one: everything they do is recorded here, in this browser.</p>`}
           ${naming ? `<div class="row"><label class="sr" for="ap-name">The new ranger's name</label><input id="ap-name" maxlength="12" placeholder="Name" autocomplete="off"><button data-act="enlist" class="primary">Enlist</button><button data-act="cancel">Cancel</button></div>` :
           `<div class="row"><button data-act="new"${campaign && !list.length ? ' class="primary"' : ""}>Enlist a new ranger</button></div>`}`;
       },
@@ -222,10 +247,10 @@
         <div class="orders"><div class="text">
           <p>${esc(m.brief)}</p>
           <p><b>Goal:</b> ${esc(m.goalText)}.</p>
-          <p class="gk-note">${esc(z.note)}${m.recall === false ? " The Osprey cannot be recalled on this mission." : ""}</p>
+          <p class="note">${esc(z.note)}${m.recall === false ? " The Osprey cannot be recalled on this mission." : ""}</p>
         </div><figure class="recon"><img class="px" src="${recon}" alt="Reconnaissance photograph of the objective" width="320" height="${Math.min(20, g.y1 - g.y0) * 8}"><figcaption>Reconnaissance: the objective, north end of the area.</figcaption></figure></div>
         <h3>Supply pods</h3>
-        <p class="gk-note">Three pods, four things in each. Kick them out over open ground on the way in: a pod that lands in a ditch, on rocks or trees, on wire or in water is lost. Click a slot for the next item; right-click for the one before.</p>
+        <p class="note">Three pods, four things in each. Kick them out over open ground on the way in: a pod that lands in a ditch, on rocks or trees, on wire or in water is lost. Click a slot for the next item; right-click for the one before.</p>
         <div class="pods">${pods.map((p, i) => `<div class="pod" role="group" aria-label="Pod ${i + 1}"><span>Pod ${i + 1}</span>${p.map((it, j) => `<button data-slot="${i}.${j}" class="it-${it}" aria-label="${esc(slotLabel(i, j, it))}">${esc(ITEM[it])}</button>`).join("")}</div>`).join("")}</div>
         <p class="kit"><b>You land with</b> a carbine and 4 magazines, 3 grenades, 1 LAW rocket, 1 time bomb, 1 first aid kit, and the knife.<br><b>In the pods:</b> <span id="ap-tally">${tally(pods)}</span>.</p>
         <div class="row end"><button data-act="go" class="primary">Board the Osprey</button></div>`,
@@ -286,21 +311,21 @@
     const retry = !run.campaign && (!r || r.status === "active");
     const fallen = out && out.kia;
     const hero = r ? (fallen ? `<figure class="memorial">${portrait(r, 4)}<figcaption><b>${esc(AP.rankName(r.rank))} ${esc(r.name)}</b><span>Killed in action: ${esc(m.name)}</span>
-        <span>${r.log.length} mission${r.log.length === 1 ? "" : "s"} · ${r.merit} merit</span><span class="ribbons">${ribbons(r, 2)}</span><span class="gk-note">On the memorial, with the roster.</span></figcaption></figure>`
-      : `<figure class="hero">${portrait(r, 4)}${insignia(r.rank, 3)}</figure>`) : `<figure class="hero">${img(AP.portraitArt(db.result === "kia" ? "memorial" : db.result === "captured" ? "captured" : "alive"), 88, 96, "px portrait", "")}</figure>`;
+        <span>${r.log.length} mission${r.log.length === 1 ? "" : "s"} · ${r.merit} merit</span><span class="ribbons">${ribbons(r, 2)}</span><span class="note">On the memorial, with the roster.</span></figcaption></figure>`
+      : `<figure class="hero">${portrait(r, 4)}${insignia(r.rank, 4)}</figure>`) : `<figure class="hero">${img(AP.portraitArt(db.result === "kia" ? "memorial" : db.result === "captured" ? "captured" : "alive"), 88, 96, "px portrait", "")}</figure>`;
     UI.open("After the mission", { wide: true, closable: false,
       html: () => `<div class="debrief">${hero}<div class="report">
-        <h3 class="mname ${tone}">${esc(head)}</h3>
+        <h3 class="mname big ${tone}">${esc(head)}</h3>
         <p class="meta">${m.n}. ${esc(m.name)} · ${esc(C.DIFF.name[db.diff])}</p>
         ${cause ? `<p class="cause"><b>${esc(cause[0])}</b>${cause[1] ? ` ${esc(cause[1])}` : ""}</p>` : ""}
         ${db.failed ? `<p class="cause"><b>${esc(db.failed)}.</b></p>` : ""}
         <table class="merit">${db.lines.map(([t, n]) => `<tr><td>${esc(t)}</td><td class="num">${n > 0 ? "+" : ""}${n}</td></tr>`).join("")}
         <tr class="sum"><td>Merit${db.mult !== 1 ? ` (× ${db.mult} for difficulty)` : ""}${db.result === "captured" ? ", halved: captured" : ""}${db.result === "aborted" ? ": none for an aborted mission" : ""}</td><td class="num">${db.total}</td></tr></table>
         ${r && !fallen ? `<p>${esc(AP.rankName(r.rank))} ${esc(r.name)}, ${r.merit} merit.${db.result === "captured" ? " Held in the enemy's camp until another ranger frees them on mission 8." : ""}</p>` : ""}
-        ${!r ? `<p class="gk-note">A practice ranger: nothing is recorded.</p>` : ""}
+        ${!r ? `<p class="note">A practice ranger: nothing is recorded.</p>` : ""}
         </div></div>
         ${out && out.promoted && !fallen ? `<div class="honour">${insignia(r.rank, 4)}<p><b>Promoted to ${esc(AP.rankName(r.rank))}.</b></p></div>` : ""}
-        ${out && out.award ? `<div class="honour">${img(AP.ribbonArt(out.award), 78, 30, "px ribbon", AP.awardName(out.award))}<p><b>Awarded the ${esc(AP.awardName(out.award))}.</b></p></div>` : ""}
+        ${out && out.award ? `<div class="honour">${img(AP.ribbonArt(out.award), 104, 40, "px ribbon", AP.awardName(out.award))}<p><b>Awarded the ${esc(AP.awardName(out.award))}.</b></p></div>` : ""}
         ${out && out.liberated ? `<p class="ok">${out.liberated} captured ranger${out.liberated === 1 ? "" : "s"} back on active duty.</p>` : ""}
         ${out && out.campaignDone ? `<p><b>Campaign complete:</b> ${r.campaign.goals} of 12 goals.${out.colonel ? " Promoted to Colonel." : ""}</p>` : ""}
         <div class="row end">${nextCamp ? `<button data-act="next" class="primary">Next campaign mission</button>` : ""}
@@ -322,12 +347,12 @@
     const d = AP.Roster.data;
     const recent = r => r.log.slice(-3).reverse().map(l => `${esc(AP.MISSION[l.mission].name)}: ${esc(RESULT[l.result])}${l.goal ? ", goal met" : ""} (${l.merit})`).join("<br>");
     UI.open("Veteran roster", { wide: true,
-      html: () => `${d.rangers.length ? `<ul class="roster">${d.rangers.map(r => rangerRow(r, `<span class="gk-note recent">${recent(r)}</span>`)).join("")}</ul>` : `<p class="gk-note">No veterans. Enlist one from New mission or Campaign.</p>`}
+      html: () => `${d.rangers.length ? `<ul class="roster">${d.rangers.map(r => rangerRow(r, `<span class="note recent">${recent(r)}</span>`)).join("")}</ul>` : `<p class="note">No veterans. Enlist one from New mission or Campaign.</p>`}
         <div class="row"><button data-act="enlist">Enlist or assign a ranger</button></div>
-        ${d.memorial.length ? `<h3>The memorial</h3><ul class="roster memorial">${d.memorial.map(r => rangerRow(r, `<span class="gk-note recent">${recent(r)}</span>`)).join("")}</ul>` : ""}
-        <h3>Ranks</h3><div class="ranks">${C.RANKS.map((rk, i) => `<span>${insignia(i, 1)}<b>${rk[0]}</b> ${esc(rk[1])}</span>`).join("")}</div>
-        <p class="gk-note">Merit earns the rank; Colonel is for a campaign ranger with ten goals or more.</p>
-        <h3>Decorations</h3><div class="ranks">${C.AWARDS.map(a => `<span>${img(AP.ribbonArt(a[0]), 39, 15, "px ribbon", "")}${esc(a[1])}<i class="gk-note">${isFinite(a[2]) ? `${a[2]} merit in one mission` : "a campaign, every goal met"}</i></span>`).join("")}</div>`,
+        ${d.memorial.length ? `<h3>The memorial</h3><ul class="roster memorial">${d.memorial.map(r => rangerRow(r, `<span class="note recent">${recent(r)}</span>`)).join("")}</ul>` : ""}
+        <h3>Ranks</h3><div class="ranks">${C.RANKS.map((rk, i) => `<span>${insignia(i, 2)}<b>${rk[0]}</b> ${esc(rk[1])}</span>`).join("")}</div>
+        <p class="note">Merit earns the rank; Colonel is for a campaign ranger with ten goals or more.</p>
+        <h3>Decorations</h3><div class="ranks decos">${C.AWARDS.map(a => `<span>${img(AP.ribbonArt(a[0]), 52, 20, "px ribbon", "")}<b>${esc(a[1])}</b><i class="note">${isFinite(a[2]) ? `${a[2]} merit in one mission` : "a campaign, every goal met"}</i></span>`).join("")}</div>`,
       onClick: b => { if (b.dataset.act === "enlist") { UI.close(true); UI.assignment(); } },
     });
   };
@@ -335,14 +360,14 @@
   /* ---- pause ---- */
   UI.pause = () => {
     const S = AP.game.S, onFoot = S.phase === "foot";
-    UI.open("Paused", {
+    UI.open("Paused", { popup: true,
       html: () => `<h3 class="mname">${esc(AP.MISSION[S.mission].name)}</h3>
         <p class="meta">${AP.HUD.mmss(S.clock)} on the clock · ${esc(AP.objStatus(S))}</p>
         <div class="col"><button data-act="resume" class="primary">Resume</button>
         <button data-act="map" ${onFoot ? "" : "disabled"}>Map <kbd>Tab</kbd>${onFoot ? "" : " <span>(on the ground)</span>"}</button>
         <button data-act="settings">Settings</button><button data-act="help">Help</button>
         <button data-act="abort">${AP.aid("checkpoint") ? "Leave: resume it later" : "Abort the mission"}</button></div>
-        <p class="gk-note keys"><kbd>Space</kbd> fire · <kbd>Shift</kbd> run · <kbd>C</kbd> crawl · <kbd>1</kbd>–<kbd>6</kbd> weapons · <kbd>E</kbd> use · <kbd>H</kbd> first aid · <kbd>Q</kbd> Osprey · <kbd>Tab</kbd> map</p>`,
+        <p class="note keys">${[["Space", "fire"], ["Shift", "run"], ["C", "crawl"], ["1</kbd>–<kbd>6", "weapons"], ["E", "use"], ["H", "first aid"], ["Q", "Osprey"], ["Tab", "map"]].map(([k, w]) => `<span><kbd>${k}</kbd> ${w}</span>`).join(" · ")}</p>`,
       onClick: async b => {
         const a = b.dataset.act;
         if (a === "resume") UI.close();
@@ -360,27 +385,27 @@
 
   /* ---- Settings (greykit.games STANDARD.md §7: the game's own, Sound, speed, This browser) ---- */
   function showSettings() {
-    const pill = (on, label, act) => `<button data-set="${act}" class="${on ? "on" : ""}" aria-pressed="${on}">${label}</button>`;
-    const sw = (k, n) => `<button data-set="aidt:${k}" role="switch" aria-checked="${AP.aid(k)}" aria-label="${esc(n)}" class="switch ${AP.aid(k) ? "on" : ""}">${AP.aid(k) ? "On" : "Off"}</button>`;
+    const pill = (on, label, act) => `<button data-set="${act}" class="pill${on ? " on" : ""}" aria-pressed="${on}">${label}</button>`;
+    const sw = (k, n) => `<button data-set="aidt:${k}" role="switch" aria-checked="${AP.aid(k)}" aria-label="${esc(n)}" class="pill switch${AP.aid(k) ? " on" : ""}">${AP.aid(k) ? "On" : "Off"}</button>`;
     UI.open("Settings", { wide: true,
       html: () => { const changed = Object.keys(AP.prefs.over).length, adj = changed ? ", adjusted" : ""; return `
         <h3>Aids</h3>
         <div class="row">${pill(AP.prefs.aids === "classic", "Classic" + (AP.prefs.aids === "classic" ? adj : ""), "aids:classic")}${pill(AP.prefs.aids === "field", "Field" + (AP.prefs.aids === "field" ? adj : ""), "aids:field")}</div>
-        <p class="gk-note">Classic is the 1987 game: the indicators in the corner and nothing else, run and crawl as toggles, pods carried as weight, a mission played through. Field adds the helps below. <kbd>L</kbd> switches between them in a mission.</p>
+        <p class="note">Classic is the 1987 game: the indicators in the corner and nothing else, run and crawl as toggles, pods carried as weight, a mission played through. Field adds the helps below. <kbd>L</kbd> switches between them in a mission.</p>
         <details class="aid-list"${UI.aidOpen ? " open" : ""}><summary>Set each aid on its own${changed ? ` (${changed} changed)` : ""}</summary>
-        <table class="aids">${AP.AID_LIST.map(([k, n, note]) => `<tr><td><b>${esc(n)}</b><br><span class="gk-note">${esc(note)}</span></td><td class="act">${sw(k, n)}</td></tr>`).join("")}</table></details>
+        <table class="aids">${AP.AID_LIST.map(([k, n, note]) => `<tr><td><b>${esc(n)}</b><br><span class="note">${esc(note)}</span></td><td class="act">${sw(k, n)}</td></tr>`).join("")}</table></details>
         <h3>Look</h3>
-        <div class="row">${pill(AP.prefs.palette === "c64", "C64 colours", "pal:c64")}${pill(AP.prefs.palette === "modern", "Modern colours", "pal:modern")}${pill(AP.prefs.scanlines, "Scanlines", "scan:1")}${pill(!AP.prefs.scanlines, "No scanlines", "scan:0")}</div>
-        <p class="gk-note">The sixteen colours of the Commodore 64, or the same sixteen for a modern screen.</p>
+        <div class="row">${pill(!AP.prefs.scanlines, "No scanlines", "scan:0")}${pill(AP.prefs.scanlines, "Scanlines", "scan:1")}</div>
+        <p class="note">Faint lines across the field, as an old television drew it.</p>
         <h3>Sound</h3>
         <div class="row">${pill(!AP.SFX.muted, "On", "mute:0")}${pill(AP.SFX.muted, "Off", "mute:1")}</div>
-        <p class="gk-note">Gunfire, footsteps, the Osprey, the alarms; the march on the title. <kbd>M</kbd> switches it anywhere.</p>
+        <p class="note">Gunfire, footsteps, the Osprey, the alarms; the march on the title. <kbd>M</kbd> switches it anywhere.</p>
         <h3>Game speed</h3>
         <div class="row">${Object.entries(AP.SPEEDS).map(([k, [n, hz]]) => pill(AP.prefs.speed === k, `${n} (${hz})`, "speed:" + k)).join("")}</div>
-        <p class="gk-note">Steps of the game each second; Classic is the C64's fifty. Every distance is in steps, so a slower clock changes nothing but time.</p>
+        <p class="note">Steps of the game each second; Classic is the C64's fifty. Every distance is in steps, so a slower clock changes nothing but time.</p>
         <h3>This browser</h3>
         <div class="row"><button data-set="forget" class="danger">Forget everything</button></div>
-        <p class="gk-note">Clears everything Airborne Puma keeps in this browser: the veteran roster and the memorial, a mission in progress, and these settings.</p>`; },
+        <p class="note">Clears everything Airborne Puma keeps in this browser: the veteran roster and the memorial, a mission in progress, and these settings.</p>`; },
       onClick: async (b, api) => {
         const v = b.dataset.set; if (!v) return;
         if (v === "forget") {
@@ -390,7 +415,7 @@
         const [k, a, c] = v.split(":");
         if (k === "aids") AP.setAids(a);
         else if (k === "aidt") AP.setAid(a, !AP.aid(a));
-        else if (k === "pal") { AP.prefs.palette = a; AP.savePrefs(); AP.buildArt(a); AP.Render.small = null; }
+        else if (k === "pal") { AP.prefs.palette = a; AP.savePrefs(); AP.buildArt(a); AP.Render.small = null; thumbs.clear(); }
         else if (k === "scan") { AP.prefs.scanlines = a === "1"; AP.savePrefs(); AP.game.applyLook(); }
         else if (k === "mute") { if ((a === "1") !== AP.SFX.muted) AP.game.toggleMute(); }
         else if (k === "speed") { AP.prefs.speed = a; AP.savePrefs(); AP.game.applySpeed(); }
@@ -419,12 +444,12 @@
     <tr><td>Aids</td><td><kbd>L</kbd> Classic or Field</td></tr>
     <tr><td>Sound</td><td><kbd>M</kbd></td></tr>
     <tr><td>Fly-over</td><td>Left and right drift the Osprey. <kbd>Space</kbd> kicks out a pod; on the green light it jumps. Under the parafoil, the arrow keys steer. <kbd>F</kbd> hurries the Osprey (Field).</td></tr>
-    </table><p class="gk-note">A gamepad works too: stick to move, A fire, B crawl, X use, Y next weapon, LB run, RB call the Osprey, LT first aid, Back map, Start pause.</p>`;
+    </table><p class="note">A gamepad works too: stick to move, A fire, B crawl, X use, Y next weapon, LB run, RB call the Osprey, LT first aid, Back map, Start pause.</p>`;
   UI.helpTabs = () => [
     ["Mission", `<p><b>You are an Airborne Ranger</b>, and a puma. The Osprey takes you in over the north end of the mission area, past the objective, to the drop zone at the south. On the way, kick out your three <b>supply pods</b> where you will want them; on the green light, jump.</p>
       <p>On the ground, the <b>clock</b> is running. Get to the objective, do what the orders say, then <b>call the Osprey</b>: it comes back to the pickup point (the X on the map), lets down a ladder and waits a little while. Climb it. If the clock runs out the Osprey comes anyway, once. Miss it, and you are captured.</p>
       <p>A <b>practice ranger</b> is anyone; nothing is kept. A <b>veteran</b> is yours: their merit, rank and decorations are kept in this browser, every mission they fly is on their record, and if they are killed in action they go to the memorial. A captured veteran waits in the enemy's camp until another ranger frees them on mission 8. The <b>campaign</b> is all twelve missions in order: only there can a ranger make Colonel.</p>
-      <p class="gk-note">${CREDIT}</p>`],
+      <p class="gk-credit">${CREDIT}</p>`],
     ["Keys", KEYS_TABLE],
     ["On foot", `<p><b>Walking</b> rests you; <b>running</b> fills the fatigue bar (green, then blue, then red), and when it is full you walk until you have your breath back. Wounds, the weight of what you carry and the desert heat all make it fill faster.</p>
       <p><b>Crawling</b> is slow and quiet. Behind a wall or a boulder, in scrub or a snow drift, a crawling ranger is hard to see. In a <b>trench</b> or a ravine you are hidden from anyone not in it with you, standing or crawling. Crawl through <b>water</b> and you are under it, hidden, but not for long.</p>

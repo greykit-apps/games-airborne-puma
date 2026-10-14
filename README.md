@@ -1,16 +1,16 @@
 # Airborne Puma
 
-**Twelve missions behind enemy lines.** A remake of *Airborne Ranger* (MicroProse, 1987, Commodore 64), and the ranger is a puma.
+**Twelve missions behind enemy lines.** A remake of *Airborne Ranger* (MicroProse, 1987, Commodore 64): the ranger is a puma, the enemy are wolves, and it is drawn as modern pixel art in the original's tilted overhead view.
 
 ## Play
 
 [greykit.com/games/airbornepuma](https://greykit.com/games/airbornepuma/)
 
-No install required. Plain scripts, no build step, nothing fetched at play time: every picture is drawn and every sound synthesised in the page.
+No install required. Plain scripts, no build step, nothing fetched at play time: every picture is drawn and every sound synthesised in the page; the two typefaces ship with it.
 
-![The fly-over: the arctic strip at half scale, the Osprey, and where the next pod will land](screenshots/flyover.png)
+![The fly-over: the arctic airfield at half scale, three pods still to drop](screenshots/flyover.png)
 
-![On the ground at the depot: a trench, a machine-gun nest, soldiers who have seen the ranger, and the indicators in the corner](screenshots/ground.png)
+![On the ground at the depot: the puma ranger by the wire, a machine-gun nest, a trench, two wolf soldiers who suspect something with their fields of view, and the HUD panels](screenshots/ground.png)
 
 ## How it plays
 
@@ -37,7 +37,7 @@ A **practice ranger** is anyone, and nothing is kept. A **veteran** is enlisted 
 
 ## Classic and Field
 
-**Classic** is the 1987 game: the indicators in the corner and nothing more, run and crawl as toggles, pods carried as weight, a mission played through. **Field**, the default, adds a minimap, arrows to the targets and the pickup, the mission's progress and the alarm state, `?` and `!` over soldiers who suspect or see you, fly-over guidance, Shift held to run, mouse aim, the carbine back in hand after a throw, pods that unpack, and leaving a mission to resume later. Settings has every aid on its own; `L` switches the set mid-mission. Settings also has the C64's sixteen colours or a modern version of them, scanlines, and the game speed (fifty steps a second, as the C64, or forty or sixty).
+**Classic** is the 1987 game: the indicators in the corner and nothing more, run and crawl as toggles, pods carried as weight, a mission played through. **Field**, the default, adds a minimap, arrows to the targets and the pickup, the mission's progress and the alarm state, `?` and `!` over soldiers who suspect or see you, fly-over guidance, Shift held to run, mouse aim, the carbine back in hand after a throw, pods that unpack, and leaving a mission to resume later. Settings has every aid on its own; `L` switches the set mid-mission. Settings also has scanlines, and the game speed (fifty steps a second, as the C64, or forty or sixty).
 
 ## Keys
 
@@ -62,14 +62,17 @@ A gamepad works. It is a desktop game: on a phone or a small window the page say
 
 | | |
 |---|---|
-| `index.html` | the page: the 320×200 play screen, the canon title, the note for small screens |
+| `index.html` | the page: the 320×200 play screen, the title, the note for small screens |
 | `css/gk-tokens.css` | the Tactical palette, byte for byte from games-meta `canon/` (STANDARD.md §4) |
-| `css/airbornepuma.css` | the page and the screens with words on them |
-| `js/gk-title.js` | the greykit.games boot and title, byte for byte from games-meta `canon/` (§3) |
+| `css/airbornepuma.css` | the page, the HUD, and the screens with words on them: flat dark panels over the field |
+| `fonts/` | Barlow Semi Condensed and Pixelify Sans (SIL Open Font License; the licences are beside them) |
+| `js/gk-title.js` | the greykit.games boot, byte for byte from games-meta `canon/` (§3); the title after it is the game's own, in `js/main.js` |
 | `js/engine/*.js`, `js/util.js`, `js/tiles.js`, `js/missions.js` | the game itself, with no DOM in it: map generation, the ranger, weapons, the enemy, the alert, the twelve missions, the airdrop, extraction, merit |
 | `js/engine/bot.js` | a ranger with no imagination, for the tests (not loaded by the page) |
-| `js/palette.js`, `js/art.js` | the sixteen colours, and every picture drawn from them |
-| `js/render.js`, `js/hud.js` | the play screen and what is written over it |
+| `js/kit.js` | what the play screen's art shares: 480×300, 24-pixel tiles, the low sun and its shadows, the zones' colour ramps |
+| `js/ground.js`, `js/things.js`, `js/people.js` | the ground and what stands on it; installations, the Osprey, pods and effects; the puma and the wolves |
+| `js/palette.js`, `js/art.js` | the old sixteen-colour art still used for portraits, rank insignia and ribbons |
+| `js/render.js`, `js/hud.js` | the play screen (and the title's picture), and the panels over it |
 | `js/sfx.js` | Web Audio: the effects, the loops, the title march |
 | `js/input.js`, `js/career.js`, `js/screens.js`, `js/main.js` | controls, the roster and settings, the sheets, and the loop |
 | `tools/sim-check.js` | headless: the rules, the bot winning every mission, a replay matching tick for tick |

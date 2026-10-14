@@ -66,7 +66,7 @@
     let aim = null;
     if (AP.aid("mouseAim") && I.mouse.over && I.mouse.used && S.phase === "foot") {
       const cam = AP.Render.cam, p = S.player;
-      aim = AP.dirTo(I.mouse.x + cam.x - p.x * 16, I.mouse.y + cam.y + 6 - p.y * 16);
+      aim = AP.dirTo(I.mouse.x + cam.x - p.x * AP.K.TS, I.mouse.y + cam.y + 11 - p.y * AP.K.TS);
     }
     const run = AP.aid("runHold") ? (on("run") || I.run) : I.run;
     const c = {
