@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Airborne Puma — Behind Enemy Lines</title>
+<meta name="description" content="Twelve missions behind enemy lines, dropped in by Osprey with three supply pods and a clock running. A remake of Airborne Ranger, the 1987 Commodore 64 classic, and the ranger is a puma.">
+<meta name="theme-color" content="#05070f">
+<meta name="color-scheme" content="dark">
+<meta name="referrer" content="no-referrer">
+<meta property="og:title" content="Airborne Puma">
+<meta property="og:description" content="Twelve missions behind enemy lines, dropped in by Osprey with three supply pods and a clock running. A remake of Airborne Ranger, the 1987 Commodore 64 classic, and the ranger is a puma.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://greykit.com/games/airbornepuma/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Twelve missions behind enemy lines, dropped in by Osprey with three supply pods and a clock running. A remake of Airborne Ranger, the 1987 Commodore 64 classic, and the ranger is a puma.">
+<meta property="og:url" content="https://greykit.com/games/airbornepuma/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Airborne Puma">
+<meta name="twitter:description" content="Twelve missions behind enemy lines, dropped in by Osprey with three supply pods and a clock running. A remake of Airborne Ranger, the 1987 Commodore 64 classic, and the ranger is a puma.">
+<meta name="twitter:image" content="https://greykit.com/games/airbornepuma/og.png">
+<meta name="twitter:image:alt" content="Twelve missions behind enemy lines, dropped in by Osprey with three supply pods and a clock running. A remake of Airborne Ranger, the 1987 Commodore 64 classic, and the ranger is a puma.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+<link rel="icon" href="favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="stylesheet" href="css/gk-tokens.css?v=7c37e1f9">
+<link rel="stylesheet" href="css/airbornepuma.css?v=83bf4c15">
+</head>
+<body>
+<div id="game" hidden>
+  <div id="stage"><canvas id="screen" width="320" height="200" aria-label="Airborne Puma: the mission area"></canvas></div>
+  <div id="corner">
+    <button id="pausebtn" aria-label="Pause" title="Pause (Esc)"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><rect x="4" y="3" width="3" height="10" fill="currentColor"/><rect x="9" y="3" width="3" height="10" fill="currentColor"/></svg></button>
+    <button id="snd" aria-label="Sound" aria-pressed="true" title="Sound (M)"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M2 6h3l4-3v10l-4-3H2z" fill="currentColor"/><path class="on" d="M11 5.5c1.2 1.4 1.2 3.6 0 5M12.8 3.8c2.1 2.4 2.1 6 0 8.4" stroke="currentColor" stroke-width="1.4" fill="none"/><path class="off" d="M11 5.5l4 5M15 5.5l-4 5" stroke="currentColor" stroke-width="1.4"/></svg></button>
+  </div>
+  <div id="live" class="sr" aria-live="polite"></div>
+</div>
+<div id="title" hidden></div>
+<div id="small" role="dialog" aria-labelledby="small-h">
+  <img class="px" src="icon.svg" width="96" height="96" alt="">
+  <h1 id="small-h">Airborne Puma is built for a desktop</h1>
+  <p>Twelve missions behind enemy lines need a keyboard, or a gamepad, and a bigger screen than this. Come back on a computer.</p>
+  <p class="gk-credit">Built by <a href="https://greykit.com/" target="_blank" rel="noopener">greykit.com</a></p>
+</div>
+<script src="js/gk-title.js?v=6080c669"></script>
+<script src="js/util.js?v=408190f2"></script>
+<script src="js/palette.js?v=56e73be6"></script>
+<script src="js/tiles.js?v=ab64956f"></script>
+<script src="js/art.js?v=160f7833"></script>
+<script src="js/sfx.js?v=09c1e2d8"></script>
+<script src="js/engine/const.js?v=35ef92c3"></script>
+<script src="js/engine/mapgen.js?v=488fa7bd"></script>
+<script src="js/engine/actors.js?v=05debf46"></script>
+<script src="js/engine/weapons.js?v=591cf292"></script>
+<script src="js/engine/alert.js?v=f0a39c4b"></script>
+<script src="js/engine/ai.js?v=3486e6f7"></script>
+<script src="js/engine/objectives.js?v=39789f65"></script>
+<script src="js/engine/airdrop.js?v=7c929940"></script>
+<script src="js/engine/extract.js?v=bf7bab32"></script>
+<script src="js/engine/scoring.js?v=dbd05212"></script>
+<script src="js/engine/world.js?v=a1c253c6"></script>
+<script src="js/missions.js?v=2b2c10e3"></script>
+<script src="js/career.js?v=7567cd5e"></script>
+<script src="js/input.js?v=2841b4fd"></script>
+<script src="js/render.js?v=04b16773"></script>
+<script src="js/hud.js?v=55f0a52e"></script>
+<script src="js/screens.js?v=44ee5f95"></script>
+<script src="js/main.js?v=c666c290"></script>
+</body>
+</html>

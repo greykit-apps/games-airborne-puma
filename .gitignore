@@ -1,0 +1,9 @@
+.claude/
+.DS_Store
+# the original Airborne Ranger disks, kept beside the repo for reference only -- never commit them
+*.D64
+*.d64
+*.zip
+reference/
+# design-review snapshots and the live-inspection server's scratch folders, local only
+.impeccable/

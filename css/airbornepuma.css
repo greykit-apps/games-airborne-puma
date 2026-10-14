@@ -1,0 +1,158 @@
+/* Airborne Puma -- the page around the play screen, and the screens with
+ * words on them. The canon palette (css/gk-tokens.css) comes first; nothing
+ * here gives a canon name another value (games-meta STANDARD.md §4). The play
+ * screen itself, and every picture in the sheets, is drawn in the C64's
+ * sixteen colours. A desktop game: small screens get a note instead. */
+:root {
+  --font-mono: ui-monospace, Menlo, Consolas, "Courier New", monospace;
+  --edge: #47609c;          /* control and keycap outlines: 3:1 on the panel */
+}
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--bg); color: var(--text); font-family: var(--font-mono); font-size: 13px; }
+body { overflow: hidden; -webkit-text-size-adjust: 100%; caret-color: var(--accent); }
+::selection { background: var(--accent); color: var(--bg); }
+[hidden] { display: none !important; }
+img.px, .px { image-rendering: pixelated; image-rendering: crisp-edges; }
+.sr { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+button { font: inherit; color: inherit; background: var(--panel); border: 1px solid var(--line); border-radius: 2px; cursor: pointer; padding: 6px 10px; }
+@media (hover: hover) { button:hover:not(:disabled) { border-color: var(--lit); background: var(--panel2); } }
+button:focus-visible { outline: none; border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+button:disabled { opacity: .45; cursor: default; }
+button.on, button.primary { color: var(--bg); background: var(--accent); border-color: var(--accent); font-weight: 600; }
+@media (hover: hover) { button.on:hover:not(:disabled), button.primary:hover:not(:disabled) { color: var(--bg); background: #8af6ff; border-color: #8af6ff; } }
+/* a lit button already wears the accent: its focus is a light ring outside it */
+button.on:focus-visible, button.primary:focus-visible, .gk-menu button.gk-primary:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; box-shadow: none; }
+button.danger { color: var(--danger); border-color: var(--danger); }
+@media (hover: hover) { button.danger:hover:not(:disabled) { background: var(--danger); color: var(--bg); border-color: var(--danger); } }
+button.quiet { color: var(--dim); }
+kbd { font: inherit; font-size: 11px; color: var(--ink); border: 1px solid var(--edge); border-radius: 2px; padding: 0 4px; min-width: 16px; text-align: center; display: inline-block; }
+a { color: var(--steel); text-underline-offset: 3px; }
+input { font: inherit; color: var(--text); background: var(--bg); border: 1px solid var(--edge); border-radius: 2px; padding: 6px 8px; min-width: 0; }
+input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+input::placeholder { color: var(--dim); }
+
+/* ---- the title ---- */
+.gk-title .scene canvas { width: 100%; height: 100%; image-rendering: pixelated; }
+.gk-sub { margin: 10px 0 0; padding: 0 8px; max-width: 100%; color: var(--dim); letter-spacing: .14em; text-transform: uppercase; font-size: 12px; text-align: center; }
+.gk-credit { color: var(--dim); }
+
+/* ---- the game ---- */
+#game { position: fixed; inset: 0; display: grid; place-items: center; background: #000; }
+#stage { position: relative; background: #000; }
+#screen { position: absolute; inset: 0; width: 100%; height: 100%; image-rendering: pixelated; image-rendering: crisp-edges; cursor: crosshair; }
+#stage.scan::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: repeating-linear-gradient(to bottom, rgba(0,0,0,0) 0, rgba(0,0,0,0) 2px, rgba(0,0,0,.22) 3px); }
+#corner { position: fixed; right: 10px; bottom: 10px; display: flex; gap: 6px; z-index: 5; }
+#corner button { width: 34px; height: 34px; padding: 0; display: grid; place-items: center; background: rgba(10,14,26,.85); color: var(--steel); border-color: var(--edge); }
+#snd .off, #snd.muted .on { display: none; }
+#snd.muted .off { display: inline; }
+#snd.muted { color: var(--dim); }
+
+/* ---- the screens with words ---- */
+.ap-sheet.wide .gk-box { width: min(820px, 100%); }
+.ap-sheet button { border-color: var(--edge); }
+.ap-sheet button.on, .ap-sheet button.primary { border-color: var(--accent); }
+.ap-sheet button.danger { border-color: var(--danger); }
+.ap-sheet .gk-head button[data-x] { padding: 6px; display: grid; place-items: center; }
+.ap-sheet .gk-head .back { padding: 3px 9px; font-size: 12px; }
+.ap-sheet .gk-body b { color: var(--text); }
+/* the sheets make bold text white; in a lit (cyan) button it keeps the button's dark ink */
+.ap-sheet .gk-body button.on b, .ap-sheet .gk-body button.primary b { color: inherit; }
+.ap-sheet .gk-body > p, .ap-sheet .gk-body .text p, .ap-sheet .report p { max-width: 68ch; }
+.ap-sheet .row { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 0 0 10px; }
+.ap-sheet .row.end { justify-content: flex-end; margin-top: 18px; }
+.ap-sheet .col { display: flex; flex-direction: column; gap: 6px; max-width: 320px; margin-bottom: 14px; }
+.ap-sheet .col button { text-align: left; }
+.ap-sheet .col button span { color: var(--dim); font-size: 11px; }
+.ap-sheet .gk-body h3.mname { font-size: 16px; letter-spacing: .02em; text-transform: none; color: var(--accent); margin: 0 0 4px; }
+.ap-sheet .gk-body h3.mname.ok { color: var(--good); }
+.ap-sheet .gk-body h3.mname.warn { color: var(--warn); }
+.ap-sheet .gk-body h3.mname.danger { color: var(--danger); }
+.ap-sheet .gk-body h3.mname.dim { color: var(--ink); }
+.ap-sheet .meta { color: var(--dim); font-size: 12px; margin: 0 0 14px; }
+.ap-sheet .lede { color: var(--ink); }
+.ap-sheet .ok { color: var(--good); }
+.ap-sheet .keys { margin-top: 4px; line-height: 2; }
+.ap-ask { z-index: 70; }
+.ap-ask .gk-box { width: min(460px, 100%); }
+
+/* the personnel officer and the roster */
+.practice { display: flex; gap: 14px; align-items: center; margin-bottom: 8px; }
+.practice .gk-note { margin: 6px 0 0; }
+ul.roster { list-style: none; margin: 0 0 12px; padding: 0; }
+li.ranger { display: grid; grid-template-columns: auto 1fr auto auto; gap: 12px; align-items: center; padding: 8px 0; border-top: 1px solid var(--line); }
+li.ranger .who { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+li.ranger .act { display: flex; gap: 6px; align-items: center; }
+li.ranger .recent { font-size: 11px; line-height: 1.5; max-width: 34ch; }
+li.ranger.captured .portrait { opacity: .85; }
+ul.memorial li.ranger b { color: var(--ink); }
+.ribbons { display: flex; flex-wrap: wrap; gap: 3px; min-height: 0; }
+img.ribbon, img.insignia, img.portrait { display: block; flex: none; }
+.ranks { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 6px 14px; margin-bottom: 8px; }
+.ranks span { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+.ranks i { font-style: normal; font-size: 11px; margin-left: auto; }
+
+/* missions and difficulty */
+.missions { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin-bottom: 10px; }
+.diffs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.missions button, .diffs button { text-align: left; display: flex; flex-direction: column; gap: 4px; padding: 8px; }
+.missions button span, .diffs button span { font-size: 11px; color: var(--dim); }
+.missions .thumb { width: 100%; height: auto; aspect-ratio: 160 / 72; object-fit: cover; object-position: top; border: 1px solid var(--line); margin-bottom: 4px; image-rendering: pixelated; }
+.missions button.suggest { border-color: var(--good); }
+.missions button.suggest span { color: var(--good); }
+.diffs button.primary span { color: rgba(5,7,15,.75); }
+.diffs kbd { margin-right: 4px; }
+.diffs button.primary kbd { color: var(--bg); border-color: rgba(5,7,15,.4); }
+
+/* the briefing */
+.orders { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 20px; align-items: start; margin-bottom: 4px; }
+.recon { margin: 0; }
+.recon img { display: block; width: 100%; height: auto; border: 1px solid var(--edge); }
+.recon figcaption { font-size: 11px; color: var(--dim); margin-top: 6px; }
+.pods { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-bottom: 10px; }
+.pod { border: 1px solid var(--line); border-radius: 2px; padding: 8px; display: flex; flex-direction: column; gap: 4px; background: var(--bg); }
+.pod > span { font-size: 11px; color: var(--dim); text-transform: uppercase; letter-spacing: .1em; }
+.pod button { text-align: left; padding: 5px 8px; font-size: 12px; }
+.pod button::before { content: ""; display: inline-block; width: 8px; height: 8px; margin-right: 8px; vertical-align: 0; }
+.pod .it-mag::before { background: var(--steel); }
+.pod .it-gren::before { background: var(--good); }
+.pod .it-law::before { background: var(--blue); }
+.pod .it-bomb::before { background: var(--warn); }
+.pod .it-aid::before { background: var(--danger); }
+.kit { color: var(--ink); line-height: 1.7; }
+
+/* after the mission */
+.debrief { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 22px; align-items: start; }
+.debrief figure { margin: 0; }
+.debrief .hero { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.debrief .cause { color: var(--ink); }
+.debrief .cause b { color: var(--text); }
+.memorial { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 14px 16px; border: 3px double var(--edge); background: var(--bg); text-align: center; max-width: 200px; }
+.memorial figcaption { display: flex; flex-direction: column; gap: 4px; align-items: center; font-size: 12px; color: var(--ink); }
+.memorial figcaption b { font-size: 13px; color: var(--text); }
+.honour { display: flex; align-items: center; gap: 16px; margin: 12px 0 0; padding: 12px 14px; border: 1px solid var(--edge); background: var(--panel2); }
+.honour p { margin: 0; }
+table.merit, table.aids, table.keys { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+table.aids td, table.keys td { padding: 6px 8px 6px 0; border-top: 1px solid var(--line); vertical-align: top; }
+table.aids td.act { text-align: right; white-space: nowrap; }
+table.merit td { padding: 3px 0; }
+table.merit td.num { text-align: right; }
+table.merit tr.sum td { border-top: 1px solid var(--edge); padding-top: 6px; color: var(--text); font-weight: 600; }
+table.keys td:first-child { color: var(--dim); white-space: nowrap; }
+
+/* settings */
+.aid-list { margin: 4px 0 14px; }
+.aid-list summary { cursor: pointer; color: var(--steel); padding: 4px 0; }
+.aid-list summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.aid-list[open] summary { margin-bottom: 6px; }
+button.switch { min-width: 52px; }
+
+/* ---- a phone, or a window too small: a note instead of the game ---- */
+#small { display: none; position: fixed; inset: 0; z-index: 2147483600; background: var(--bg); flex-direction: column; align-items: center; justify-content: center; gap: 14px; padding: 24px; text-align: center; }
+#small h1 { margin: 6px 0 0; font-size: 20px; line-height: 1.3; color: var(--accent); font-weight: 600; max-width: 22ch; }
+#small p { margin: 0; color: var(--ink); line-height: 1.6; max-width: 36ch; }
+#small .gk-credit a { color: var(--steel); }
+@media (max-width: 759px), (max-height: 479px) {
+  #small { display: flex; }
+  #game, #title, #corner, .gk-boot, .gk-sheet { display: none !important; }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "Airborne Puma",
+  "short_name": "Airborne Puma",
+  "description": "Twelve missions behind enemy lines, dropped in by Osprey with three supply pods and a clock running. A remake of Airborne Ranger, the 1987 Commodore 64 classic, and the ranger is a puma.",
+  "start_url": ".",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#05070f",
+  "theme_color": "#05070f",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" },
+    { "src": "apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}

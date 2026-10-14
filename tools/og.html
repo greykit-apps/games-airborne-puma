@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>og.png</title>
+<!-- The share card, laid out as the family's are (a cyan rule, the wordmark
+     with the game's half in cyan, the description, a tagline, the icon), with
+     a scene drawn from the game's own art. Open this page over http from the
+     repo root, then save the canvas as og.png. window.renderAll() also returns
+     the favicons and the home-screen icon, drawn from icon.svg, as data URLs. -->
+<style>body{margin:0;background:#222}canvas{display:block}</style>
+</head>
+<body>
+<canvas id="og" width="1200" height="630"></canvas>
+<script src="../js/util.js"></script>
+<script src="../js/palette.js"></script>
+<script src="../js/tiles.js"></script>
+<script src="../js/art.js"></script>
+<script>
+"use strict";
+AP.buildArt("c64");
+const c = document.getElementById("og"), g = c.getContext("2d");
+g.imageSmoothingEnabled = false;
+g.fillStyle = "#05070f"; g.fillRect(0, 0, 1200, 630);
+/* the scene, right: snow, firs, the Osprey, rangers under parafoils */
+const sx = 640, sw = 560, s = 4;
+const sc = document.createElement("canvas"); sc.width = sw / s; sc.height = 630 / s;
+const x = sc.getContext("2d"); x.imageSmoothingEnabled = false;
+const sky = x.createLinearGradient(0, 0, 0, sc.height); sky.addColorStop(0, "#05070f"); sky.addColorStop(1, "#1b2540");
+x.fillStyle = sky; x.fillRect(0, 0, sc.width, sc.height);
+for (let i = 0; i < 70; i++) { x.fillStyle = i % 7 ? "#47609c" : "#dbe4fb"; x.fillRect((i * 37) % sc.width, (i * 23) % (sc.height * 0.6), 1, 1); }
+for (let tx = 0; tx < sc.width; tx += 16) for (let ty = sc.height - 32; ty < sc.height; ty += 16) x.drawImage(AP.tileArt("arctic", AP.T.OPEN, (tx + ty) & 3), tx, ty);
+for (const [tx, v] of [[4, 0], [30, 1], [96, 2], [120, 3]]) x.drawImage(AP.treeArt("arctic", v), tx, sc.height - 46);
+const osp = AP.ospreyArt(2, false);
+x.save(); x.translate(80, 34); x.rotate(-Math.PI / 2); x.drawImage(osp, -osp.width / 2, -osp.height / 2); x.restore();
+for (const [px, py] of [[26, 66], [60, 94]]) { x.drawImage(AP.chuteArt(), px, py); x.drawImage(AP.personArt("ranger", 8, "stand", 0), px + 1, py + 13); }
+x.drawImage(AP.personArt("ranger", 8, "stand", 0), 92, sc.height - 38);
+g.drawImage(sc, sx, 0, sw, 630);
+const fade = g.createLinearGradient(sx, 0, sx + 80, 0); fade.addColorStop(0, "#05070f"); fade.addColorStop(1, "rgba(5,7,15,0)"); g.fillStyle = fade; g.fillRect(sx, 0, 80, 630);
+/* the words, left */
+g.fillStyle = "#54f2ff"; g.fillRect(0, 0, 1200, 8);
+g.textBaseline = "alphabetic";
+g.font = "700 78px Menlo, ui-monospace, Consolas, monospace";
+g.fillStyle = "#e9e9f2"; g.fillText("Airborne", 70, 160);
+g.fillStyle = "#54f2ff"; g.fillText("Puma", 70, 244);
+g.font = "30px Menlo, ui-monospace, Consolas, monospace"; g.fillStyle = "#9aa1ae";
+["Twelve missions behind enemy", "lines: an Osprey, three supply", "pods and a clock running."].forEach((l, i) => g.fillText(l, 70, 330 + i * 44));
+g.font = "24px Menlo, ui-monospace, Consolas, monospace"; g.fillStyle = "#7d8aa8";
+g.fillText("After Airborne Ranger (C64, 1987).", 70, 500);
+g.fillText("The ranger is a puma.", 70, 536);
+document.title = "ready";
+
+/* the icons, from icon.svg */
+window.renderAll = async () => {
+  const svg = await (await fetch("../icon.svg")).text();
+  const img = new Image();
+  img.src = "data:image/svg+xml;base64," + btoa(svg);
+  await img.decode();
+  const out = { og: c.toDataURL("image/png") };
+  for (const n of [16, 32, 48, 180]) {
+    const k = document.createElement("canvas"); k.width = k.height = n;
+    const kg = k.getContext("2d"); kg.imageSmoothingEnabled = false;
+    kg.drawImage(img, 0, 0, n, n);
+    out["i" + n] = k.toDataURL("image/png");
+  }
+  return out;
+};
+</script>
+</body>
+</html>
