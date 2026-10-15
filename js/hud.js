@@ -36,14 +36,15 @@
     chev: [["x...", "xx..", "xxx.", "xxxx", "xxx.", "xx..", "x..."], { x: "#7fb069" }],
   };
   const iconURL = new Map();
-  function icon(name, s = 2, cls = "") {
+  /* one icon pixel is one field pixel: the size is set in CSS from --fp */
+  function icon(name, cls = "") {
     const [m, pal] = ICONS[name], h = m.length, w = Math.max(...m.map(r => r.length));
     if (!iconURL.has(name)) {
       const c = K.mk(w, h), g = c.getContext("2d");
       m.forEach((r, y) => [...r].forEach((ch, x) => { const col = pal[ch]; if (!col) return; g.fillStyle = col; g.fillRect(x, y, 1, 1); }));
       iconURL.set(name, c.toDataURL());
     }
-    return `<img class="ico ${cls}" src="${iconURL.get(name)}" width="${w * s}" height="${h * s}" alt="">`;
+    return `<img class="ico ${cls}" src="${iconURL.get(name)}" style="--w:${w};--h:${h}" alt="">`;
   }
   H.icon = icon;
 
@@ -61,14 +62,14 @@
     root = document.getElementById("hud");
     root.innerHTML = `
       <div class="hp" id="h-status">
-        <div class="h-top">${icon("clock", 3)}<span class="h-clock num">0:00</span><div class="h-mission"><span class="lbl" id="h-mno"></span><span class="h-zone" id="h-zone"></span></div></div>
+        <div class="h-top">${icon("clock")}<span class="h-clock num">0:00</span><div class="h-mission"><span class="lbl" id="h-mno"></span><span class="h-zone" id="h-zone"></span></div></div>
         <div class="h-row" id="h-wrow"><span class="lbl">Wounds</span><span class="h-pips" id="h-wounds"></span><span class="h-val num" id="h-wval"></span></div>
         <div class="h-row" id="h-frow"><span class="lbl">Fatigue</span><span class="h-bar" id="h-fat"></span></div>
         <div class="h-row" id="h-srow"><span class="lbl">Moving</span><span class="h-stance" id="h-stance"></span><span class="h-val" id="h-extra"></span></div>
         <div class="h-row" id="h-pods" hidden><span class="lbl">Pods</span><span class="h-pips" id="h-podi"></span><span class="h-val num" id="h-podn"></span></div>
         <div class="h-row" id="h-jump" hidden><span class="lbl">Jump</span><span class="h-light" id="h-light"></span><span class="h-val num" id="h-alt"></span></div>
       </div>
-      <div class="hp h-pill" id="h-alert" hidden><span class="h-eye">${icon("eye", 3)}</span><span class="lbl">Alert</span><span class="h-sep"></span><span class="h-state" id="h-astate"></span><span class="h-meter"><i></i><i></i><i></i></span></div>
+      <div class="hp h-pill" id="h-alert" hidden><span class="h-eye">${icon("eye")}</span><span class="lbl">Alert</span><span class="h-sep"></span><span class="h-state" id="h-astate"></span><span class="h-meter"><i></i><i></i><i></i></span></div>
       <div class="hp h-pill h-osprey" id="h-osprey" hidden><span class="lbl">Osprey</span><span class="h-sep"></span><span class="h-ost" id="h-ost"></span></div>
       <div class="hp" id="h-mapbox" hidden><canvas id="h-mini" width="220" height="136"></canvas><div class="h-obj"><span class="lbl">Objective</span><span class="h-tpips" id="h-tpips"></span></div><div class="h-objt" id="h-objt"></div></div>
       <div class="hp" id="h-arms">
@@ -107,12 +108,12 @@
     vis("#h-wrow", !drop); vis("#h-frow", !drop); vis("#h-srow", !drop);
     vis("#h-pods", drop); vis("#h-jump", drop);
     if (drop) {
-      put("#h-podi", [0, 1, 2].map(i => icon("pod", 2, i < 3 - d.podsLeft ? "dim" : "")).join(""));
+      put("#h-podi", [0, 1, 2].map(i => icon("pod", i < 3 - d.podsLeft ? "dim" : "")).join(""));
       put("#h-podn", `<b>${d.podsLeft}</b>/3`);
       cls("#h-light", "go", !!d.light);
       put("#h-alt", d.chute ? `${Math.max(0, Math.round(d.chute.alt * 3))} ft` : d.light ? "Go" : "");
     } else {
-      put("#h-wounds", [0, 1, 2].map(i => icon(i < p.wounds ? "woundOn" : "woundOff", 2)).join(""));
+      put("#h-wounds", [0, 1, 2].map(i => icon(i < p.wounds ? "woundOn" : "woundOff")).join(""));
       put("#h-wval", `<b>${p.wounds}</b>/3`);
       const tired = 100 - p.fat, on = Math.round(tired / 10);
       put("#h-fat", Array.from({ length: 10 }, (_, i) => `<i class="${i < on ? "on" : ""}"></i>`).join(""));
@@ -164,20 +165,20 @@
   function arms(S) {
     const p = S.player, a = p.ammo, W = C.WEAPONS;
     put("#h-slots", W.map((w, i) => `<span class="${w === p.weapon ? "on" : ""}">${i + 1}</span>`).join("") + "<em>Loadout</em>");
-    put("#h-wicon", icon(p.weapon, 3));
+    put("#h-wicon", icon(p.weapon));
     put("#h-wname", { carbine: "Carbine", gren: "Grenade", law: "LAW rocket", knife: "Knife", bomb: "Time bomb", aid: "First aid" }[p.weapon]);
     const empty = p.weapon === "carbine" && !p.rnd && !a.mag;
     let big = "", mags = "";
     if (p.weapon === "carbine") {
       big = empty ? "Empty" : p.reload ? "--" : String(p.rnd);
-      mags = `<span class="of num">+${a.mag}</span>` + icon("mag", 3).repeat(Math.min(4, a.mag));
+      mags = `<span class="of num">+${a.mag}</span>` + icon("mag").repeat(Math.min(4, a.mag));
     } else if (p.weapon === "bomb") { big = String(a.bomb); mags = `<span class="of">${p.fuse}s fuse</span>`; }
     else if (p.weapon !== "knife") big = String(a[p.weapon]);
     put("#h-rounds", big);
     cls("#h-rounds", "warn", empty || big === "0");
     put("#h-mags", mags);
     const sub = [["gren", "Grenades"], ["law", "LAW"], ["bomb", "Bombs"], ["aid", "Aid"]].filter(([w]) => w !== p.weapon);
-    put("#h-subw", sub.map(([w, n]) => `<div class="${a[w] ? "" : "none"}" title="${n}">${icon(w, 2)}<span class="n num">${a[w]}</span></div>`).join(""));
+    put("#h-subw", sub.map(([w, n]) => `<div class="${a[w] ? "" : "none"}" title="${n}">${icon(w)}<span class="n num">${a[w]}</span></div>`).join(""));
   }
 
   function toasts() {
