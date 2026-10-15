@@ -472,9 +472,8 @@
       <p>Settings has each on its own. <kbd>L</kbd> switches between the two sets in a mission.</p>`],
   ];
   UI.help = (tab = 0, after) => UI.open("Help", { wide: true, tab, tabs: UI.helpTabs(), onClose: after });
-  UI.aboutHTML = () => `<p><b>Airborne Puma</b> is a remake of <i>Airborne Ranger</i> (MicroProse, 1987) for the Commodore 64: twelve missions behind enemy lines in three zones, the Osprey and its supply pods, a veteran roster with ranks and decorations, and a campaign.</p>
-    <p>The original was designed by Lawrence Schick and programmed by Scott Spanburg, with graphics by Iris Leigh Idokogi and music by Ken Lagace. This is not affiliated with MicroProse; no code, art or audio from the original is used. Everything here is drawn and synthesised in the page, the title march included, and the ranger is a puma.</p>
-    <p>Classic plays it as it was; the Field aids are for now. The briefings, the maps and the numbers are ours, guessed where the 1987 manual is silent.</p>
+  UI.aboutHTML = () => `<p><b>Airborne Puma</b> is a remake  of <i>Airborne Ranger</i> (MicroProse, 1987) for the Commodore 64. It was one of the first action-sneaking games, but it was HARD.</p>
+    <p>I've updated the graphics and added a much-more-forgiving-for-modern-audiences overlay which will be instantly recognizable to anybody who plays these sorts of things.</p>
     <p class="gk-credit">${CREDIT}</p>`;
   UI.about = after => UI.open("About", { html: UI.aboutHTML, onClose: after });
 })();
