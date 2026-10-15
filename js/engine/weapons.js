@@ -16,6 +16,7 @@
 
   AP.useWeapon = (S, c, fireEdge) => {
     const p = S.player, w = p.weapon;
+    if (p.stab === C.STAB - C.STAB_HIT) stab(S, p);
     if (w === "carbine") {
       if (c.fire && p.cool === 0 && p.reload === 0) {
         if (p.rnd > 0) {
@@ -42,7 +43,7 @@
         AP.fireRocket(S, p.x, p.y, dx, dy, "p", C.LAW.range);
         after(S);
       } else S.ev.push({ t: "empty" });
-    } else if (w === "knife" && fireEdge) knife(S, p);
+    } else if (w === "knife" && fireEdge && !p.stab) { p.stab = C.STAB; S.ev.push({ t: "knife" }); }
     else if (w === "bomb" && fireEdge) {
       if (p.ammo.bomb > 0) {
         p.ammo.bomb--;
@@ -100,9 +101,8 @@
     return { x: x0 + dx * range, y: y0 + dy * range, s: range };
   };
 
-  /* ---- the knife ---- */
-  function knife(S, p) {
-    S.ev.push({ t: "knife" });
+  /* ---- the knife: it lands a moment after the button, as the blow does ---- */
+  function stab(S, p) {
     let best = null, bd = C.KNIFE;
     for (const e of S.en) {
       if (e.dead || e.friend || e.k === "tank") continue;
