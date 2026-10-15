@@ -8,17 +8,23 @@
 
 No install required. Plain scripts, no build step, nothing fetched at play time: every picture is drawn and every sound synthesised in the page; the two typefaces ship with it.
 
-![The fly-over: the arctic airfield at half scale, three pods still to drop](screenshots/flyover.png)
-
-![On the ground at the depot: the puma ranger by the wire, a machine-gun nest, a trench, two wolf soldiers who suspect something with their fields of view, and the HUD panels](screenshots/ground.png)
+![The title: the depot from the air, the Osprey crossing with a ranger just out under his parafoil, and the menu](screenshots/title.png)
 
 ## How it plays
 
 The Osprey brings you in over the north end of the mission area, past the objective, toward the drop zone at the south end; the whole strip scrolls by once. Kick out your three **supply pods** where you will want them (not into a ditch, onto rocks, wire or water), and jump on the green light. Steer the parafoil down.
 
+![Mission orders for the depot: the briefing, the goal, the zone's note and the recon picture of the compound](screenshots/orders.png)
+
+![The fly-over: the arctic airfield at half scale, the Osprey over the fighters, three pods still to drop](screenshots/flyover.png)
+
 On the ground the **clock** is running. Walk, run (the fatigue bar) or crawl; trenches, scrub and walls hide you. Get to the objective, do what the orders say, then **recall the Osprey**: it comes back to the pickup point, lets down a ladder and waits a little while. Miss it when the clock has run out and you are captured. Three wounds and you are killed in action.
 
 The kit is the 1987 kit: a carbine and four magazines, three grenades, one LAW rocket, one time bomb, one first aid kit, the knife, and whatever is in the pods. The enemy patrols, investigates noises, chases what it sees, and on **full alert** -- a shot or an explosion anyone hears -- converges and calls in reinforcements. Machine-gun nests, bunkers, turrets, motion-sensing mini-bunkers, minitanks, minefields and wire are in the way.
+
+![On the ground at the depot: the puma ranger at the wire below the fuel dump, tents, a sandbagged nest, wolf soldiers with their fields of view, two of them suspicious, and the HUD panels](screenshots/ground.png)
+
+![The map, on Tab: the depot's strip with the three targets boxed, the pickup marked, and what the ranger is carrying](screenshots/map.png)
 
 The twelve missions, four to a zone:
 
@@ -29,11 +35,19 @@ The twelve missions, four to a zone:
 | 7 Disable a SAM Site | 8 Liberate a P.O.W. Camp | 9 Photograph a Secret Experimental Aircraft |
 | 10 Free the Hostages | 11 Create a Diversion | 12 Delayed Sabotage |
 
+![Mission selection: the desert's missions, each with a recon picture of its objective](screenshots/missions.png)
+
 The desert tires you faster; the snow muffles sound and hides thin ice. Every mission area is laid out new each time from modular pieces, as in 1987, and proved finishable before it is used.
+
+![The arctic airfield: the ranger between a turret and a tent, two parked fighters, wolf soldiers in the snow](screenshots/arctic.png)
+
+![The P.O.W. camp in the temperate zone: the pyramid to blow, a tent, a sandbagged nest, and a wolf watching the wire](screenshots/temperate.png)
 
 ## Rangers, ranks and the campaign
 
 A **practice ranger** is anyone, and nothing is kept. A **veteran** is enlisted by name and kept in this browser, as the C64 kept them on a Roster Diskette: their merit, their rank (PFC to Lieutenant Colonel), their decorations (two Army Commendation Medals, the Bronze and Silver Stars, the Distinguished Service Cross), and every mission they flew. Captured, they wait in the enemy's camp until another ranger frees them on mission 8; killed in action, they go to the memorial. The **campaign** is all twelve missions in a fixed order at one difficulty: only there can a ranger make Colonel, or win the Medal of Honor.
+
+![The veteran roster: portraits, ranks, ribbons, the last mission each flew, and the memorial](screenshots/roster.png)
 
 ## Classic and Field
 
@@ -62,7 +76,7 @@ A gamepad works. It is a desktop game: on a phone or a small window the page say
 
 | | |
 |---|---|
-| `index.html` | the page: the 320×200 play screen, the title, the note for small screens |
+| `index.html` | the page: the 480×300 play screen, the title, the note for small screens |
 | `css/gk-tokens.css` | the Tactical palette, byte for byte from games-meta `canon/` (STANDARD.md §4) |
 | `css/airbornepuma.css` | the page, the HUD, and the screens with words on them: flat dark panels over the field |
 | `fonts/` | Barlow Semi Condensed and Pixelify Sans (SIL Open Font License; the licences are beside them) |
@@ -79,7 +93,8 @@ A gamepad works. It is a desktop game: on a phone or a small window the page say
 | `tools/mapcheck.js` | headless: every mission's map at every difficulty over many seeds, provably finishable (`--show mission:seed:diff` prints one) |
 | `tools/stamp-assets.js` | stamps each script and stylesheet URL with its content hash; CI fails on a stale one, so run it before committing |
 | `tools/check-assets.js` | every file the page names exists (games-meta STANDARD.md §10) |
-| `tools/make-icons.js`, `tools/og.html` | `icon.svg` and the PNG icons from the ranger's sprite; the share card from the game's art |
+| `tools/make-icons.js`, `tools/og.html` | `icon.svg`, the favicons and the home-screen icon (also the GitLab avatar) from one 40×40 drawing of the ranger under his parafoil; the share card, `og.png`, drawn in the play screen's own art |
+| `screenshots/` | the pictures in this file, at twice the play screen's size |
 
 `?play=<mission>&diff=<0-3>&seed=<n>&land=1` on the page drops straight into a practice mission, for testing.
 
