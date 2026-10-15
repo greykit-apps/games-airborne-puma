@@ -1,6 +1,6 @@
 /* Airborne Puma -- the ground. Data only, DOM-free.
  *
- * One set of tile ids serves all three zones; js/art.js paints each one the
+ * One set of tile ids serves all three zones; js/ground.js paints each one the
  * zone's way (sand, grass or snow under the same rules). The flags:
  *   walk   a ranger can stand on it
  *   enemy  the enemy will walk on it (they know where their own mines are)

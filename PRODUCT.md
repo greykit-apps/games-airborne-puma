@@ -40,7 +40,7 @@ Part of the greykit.games portfolio, served at greykit.com/games/airbornepuma. I
 
 ## Evidence on Hand
 
-The twelve missions' briefings, the death-cause tips and all copy are in `js/missions.js` and `js/screens.js`. No MicroProse code, art, sound or text may be used; the reference disks are gitignored.
+The twelve missions' briefings are in `js/missions.js`; the death-cause tips and the sheets' copy in `js/screens.js`; the title menu, HUD words and aid names in `js/main.js`, `js/hud.js` and `js/career.js`; ranks and decorations in `js/engine/const.js`. No MicroProse code, art, sound or text may be used; the reference disks are gitignored.
 
 ## Product Principles
 

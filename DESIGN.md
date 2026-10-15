@@ -133,14 +133,14 @@ components:
 
 **Creative North Star: "The 1987 View, Today's Finish"**
 
-Airborne Puma is the overhead, north-facing, tilted battlefield of *Airborne Ranger*, redrawn as hi-bit pixel art and lit by a low south-west sun. The field is the whole screen. Everything with height shows its roof and its south face, and every grounded thing throws a long blue-violet shadow to the north-east. Dust haze, a warm wash from the lower left and a soft vignette sit over the pixels as light, not as an effect. People stand upright in front, back and side poses inside a dark outline. The puma reads tawny and the wolves read grey, so the cast is clear at a glance.
+Airborne Puma is the overhead, north-facing, tilted battlefield of *Airborne Ranger*, redrawn as hi-bit pixel art and lit by a low south-west sun. The field is the whole screen. Everything with height shows its roof and its south face, and every grounded thing throws a long blue-violet shadow to the north-east. Dust haze, a warm wash from the lower left and a soft vignette sit over the pixels as light, not as an effect. People stand upright in eight headings inside a dark outline; they also crawl prone and fall, and the ranger draws back and lunges with the knife. The puma reads tawny and the wolves read grey, so the cast is clear at a glance.
 
 The chrome is the opposite material: flat, dark, translucent panels with hairline edges, set at the corners of the field so the ranger and the ground stay clear. Words use a condensed workhorse sans. Numbers and keys use a pixel face, which is how the panels join the pixel field without mimicking it. The menus are the same calm panels laid over a dimmed field or the title battlefield. No page anywhere is a separate "app".
 
 The world rejects two things by name: an emulated C64 screen (the retired 16-colour palette, CRT framing) and a flat top-down token board. Per PRODUCT.md it must also never look like a mobile game. That rules out glossy or bevelled buttons, cartoon gloss and free-to-play energy.
 
 **Key Characteristics:**
-- A 480x300 pixel canvas with 24px tiles, scaled up by whole numbers only.
+- A 480x300 pixel canvas with 24px tiles, scaled up by a whole number when that fills at least 86% of the window, otherwise by the exact fraction that fits, and always nearest-neighbour.
 - A low south-west sun: shadows lean north-east and are multiplied over the ground in a single pass, in each zone's own shade colour.
 - Three zones (desert, temperate, arctic) painted by the same painters from separate seven-step ground ramps.
 - Dark translucent panels, hairline borders, off-white words.
@@ -152,7 +152,7 @@ The world rejects two things by name: an emulated C64 screen (the retired 16-col
 The world has two palettes. The field is warm, sunlit and ramp-built. The chrome is near-black and bone-white, with three signal colours on top.
 
 ### Primary
-- **Signal Green** (signal-green): ready, chosen, the way forward. It fills the primary button, marks the selected tab underline, the focused menu row's wash and chevron, the "Quiet" alert state, the active weapon slot, destroyed-target pips and the green light for the jump. **Signal Green Lit** (signal-green-lit) is used for the focused primary button and for links.
+- **Signal Green** (signal-green): ready, chosen, the way forward. It fills the primary button, marks the selected tab underline (Signal Green Lit on the focused tab), the focused menu row's wash and chevron, the "Quiet" alert state, the active weapon slot, destroyed-target pips and the green light for the jump. **Signal Green Lit** (signal-green-lit) is used for the focused primary button and for links.
 
 ### Secondary
 - **Suspicion Amber** (suspicion-amber): someone has noticed. It marks the "Suspicious" alert state, high fatigue, suspicion vision cones (drawn in the canvas as rgb 240,150,30), honours panels and the time-bomb pod swatch.
@@ -164,8 +164,8 @@ The world has two palettes. The field is warm, sunlit and ramp-built. The chrome
 ### Neutral
 - **Night Page** (night-page): the page behind everything, input fields, the memorial card.
 - **Field Panel** (field-panel): sheets, the pause window and the title menu at 94% opacity.
-- **HUD Panel** (hud-panel): HUD panels at 86% opacity, so the field shows through a little more during play. The direction contract named ~88%. The build settled on 86% for the HUD and 94% for sheets, and the art kit's `K.UI.panel` keeps 88% for canvas-drawn chrome.
-- **Panel Ink** (panel-ink): dark text set on green or red fills, and the backing of the full map.
+- **HUD Panel** (hud-panel): HUD panels at 86% opacity, so the field shows through a little more during play. The direction contract named ~88%. The build settled on 86% for the HUD and 94% for sheets, The art kit defines `K.UI.panel` at 88%, but nothing draws with it: canvas-drawn chrome uses the panel colour at 38 to 90% as each mark needs.
+- **Panel Ink** (panel-ink): dark text set on green or red fills, and the backing of the fly-over view.
 - **Control Rest / Control Lit** (control-rest, control-lit): a button at rest and a button under the cursor.
 - **Bone Text** (bone-text): every word, at 14.9:1 on a panel. Menu rows at rest use it at 86% alpha.
 - **Dust Muted** (dust-muted, 7.4:1) and **Dust Faint** (dust-faint, 5.2:1): secondary words, metadata and placeholders. HUD labels use bone text at 66% alpha.
@@ -173,12 +173,12 @@ The world has two palettes. The field is warm, sunlit and ramp-built. The chrome
 - **Sprite Outline** (sprite-outline): the one-pixel dark ring round people and small things, and the soft ellipse shadow under anything airborne.
 - **Zone Shades** (desert-shade, temperate-shade, arctic-shade): the colour each zone's shadow pass is multiplied in. They are cool and blue-violet, never black.
 
-The field's ground, dirt, scrub, rock, wall, roof, water, ice and trench ramps per zone, and the shared material ramps (olive, steel, concrete, wood, canvas, red, fire, smoke, puma, wolf), live in `js/kit.js` and `js/people.js`. They are listed in the sidecar. Ramps run from light to dark, and the art picks steps from them by light and noise. Do not mix free hexes into the field.
+The field's ground, dirt, scrub, rock, wall, roof, water, ice and trench ramps per zone, and the shared material ramps (olive, steel, concrete, wood, canvas, red, fire, smoke, puma, wolf), live in `js/kit.js` and `js/people.js`. They are defined in `K.Z` and `K.MAT` in `js/kit.js`, and the people's ramps in `js/people.js`. Ramps run from light to dark, and the art picks steps from them by light and noise. Do not mix free hexes into the field.
 
 ### Named Rules
-**The Three Signals Rule.** Green means ready or chosen, amber means suspicion, red-orange means danger. These three hues carry state and nothing else, and state never travels by colour alone: the alert pill says QUIET, SUSPICIOUS or ALERT and fills one, two or three meter segments.
+**The Three Signals Rule.** Green means ready or chosen, amber means suspicion, red-orange means danger. These three hues carry state and nothing else, and state never travels by colour alone: the alert pill says QUIET, SUSPICIOUS or FULL ALERT and fills one, two or three meter segments.
 
-**The Cool Shade Rule.** Grounded shadows on the field are the zone's shade colour multiplied over the ground, never grey or black. Only airborne things (the Osprey, a parachute, a falling pod) cast a soft dark ellipse in sprite-outline at 28 to 40% alpha, because they are off the ground.
+**The Cool Shade Rule.** Grounded shadows on the field are the zone's shade colour multiplied over the ground, never grey or black. Only airborne things (the Osprey, a parachute, a falling pod) cast a soft dark shadow, because they are off the ground: an ellipse in sprite-outline at 12 to 40% alpha in the field (the Osprey's fades as it climbs), and plain black at 28 to 35% on the fly-over.
 
 ## Typography
 
@@ -202,12 +202,12 @@ The field's ground, dirt, scrub, rock, wall, roof, water, ice and trench ramps p
 
 ## Layout
 
-The play field fills the window: a 480x300 canvas scaled up by whole numbers and letterboxed on black. Four light layers sit over it (sun, cool shade, haze, vignette), and the HUD sits above them as DOM. HUD panels hold the corners at a 16px inset. The status panel (268px) is top left, the alert pill is top centre, the minimap and objective (236px) are top right, the loadout (330px) is bottom left, and the key-hint pill is bottom centre. Pause and sound sit bottom right at 36px. The pause window stands right of centre (min(440px, 100%)) over a field dimmed by a left-to-right gradient, so the ranger stays visible. Sheets centre over a 74% dim with a 3px blur at min(880px, 100%), or 1180px for wide sheets, padded 24px. The title sets the mark and menu panel (min(460px, 100%)) in a left column inset clamp(32px, 7vw, 120px), with the battlefield behind it shaded from the left. The spacing rhythm is 4/8/16/24/32, with 12, 14 and 22 inside dense panels. Desktop only: below 760x480 a note replaces the game. Mission orders collapse to one column below 1024px wide.
+The play field fills the window: a 480x300 canvas scaled up by a whole number when that fills at least 86% of the window, otherwise by the exact fraction that fits, and always nearest-neighbour, letterboxed on black. Four light layers sit over it (sun, cool shade, haze, vignette), and the HUD sits above them as DOM. HUD panels hold the corners at a 16px inset. The status panel (268px) is top left, the alert pill is top centre (with the Osprey's status pill beside it, or below it at 64px), the minimap and objective (236px) are top right, the loadout (330px) is bottom left, and the key-hint pill is bottom centre. Pause and sound sit bottom right at 36px. The pause window stands right of centre (min(440px, 100%)) over a field dimmed by a left-to-right gradient, so the ranger stays visible. Sheets centre over a 74% dim with a 3px blur at min(880px, 100%), or min(1180px, 100%) for wide sheets, inside a 32px margin, with 24px side padding inside. The title sets the mark and menu panel (min(460px, 100%)) in a left column inset clamp(32px, 7vw, 120px), with the battlefield behind it shaded from the left. The spacing rhythm is 4/8/16/24/32, with 12, 14 and 22 inside dense panels. Desktop only: below 760x480 a note replaces the game. Mission orders collapse to one column below 1024px wide.
 
 ### Named Rules
 **The Clear Field Rule.** Chrome holds the edges and corners. Nothing opaque covers the ranger's surroundings during play, and windows over the field stand off-centre or over a dim, never over a blank page.
 
-**The Whole Pixel Rule.** All field art is drawn on whole pixels at 480x300 and upscaled by integers with `image-rendering: pixelated`. Never scale by fractions, smooth, or mix resolutions.
+**The Whole Pixel Rule.** All field art is drawn on whole pixels at 480x300 and upscaled with `image-rendering: pixelated`, by a whole number whenever that fills at least 86% of the window. Never smooth or mix resolutions. The one exception today is the Tab map view, which smooths the small map as it enlarges it.
 
 ## Elevation & Depth
 
@@ -224,7 +224,7 @@ The field has real light: a low south-west sun, shadows leaning north-east at 1.
 
 ## Shapes
 
-Corners are small and consistent. Weapon slots, toggle squares and bar segments use a 2px pixel radius. Keycaps use 3px, with a heavier 2px bottom edge so they read as keys. Controls and inputs use 4px, HUD panels, mission cards, pods and recon images use 6px, and sheets, the title menu and the memorial card use 8px. Borders are always 1px hairlines. In the field, sprites carry a one-pixel dark outline, and sprite shapes are built from rows of pixels, not vector paths. Small indicators are drawn as pixel grids (`js/hud.js` icons, `js/insignia.js` ribbons and rank insignia) or as tiny inline SVG (back, close, pause, sound). There are no glyph-font icons.
+Corners are small and consistent. Weapon slots and toggle squares use a 2px pixel radius, and the HUD's bar and meter segments 1px. Keycaps use 3px, with a heavier 2px bottom edge so they read as keys. Controls and inputs use 4px, HUD panels, mission cards, pods and recon images use 6px, and sheets, the title menu and the memorial card use 8px. Borders are always 1px hairlines. In the field, sprites carry a one-pixel dark outline, and sprite shapes are built from rows of pixels, not vector paths. Small indicators are drawn as pixel grids (`js/hud.js` icons, `js/insignia.js` ribbons and rank insignia) or as tiny inline SVG (back, close, pause, sound). There are no glyph-font icons.
 
 ## Components
 
@@ -264,7 +264,7 @@ These appear only with the awareness aid on. Each is a radial wedge from an enem
 ## Do's and Don'ts
 
 ### Do:
-- **Do** draw field art on whole pixels at 480x300 with 24px tiles, and upscale only by whole numbers.
+- **Do** draw field art on whole pixels at 480x300 with 24px tiles, and upscale by whole numbers wherever they fill the window.
 - **Do** cast grounded shadows north-east along SX 1.05 / SY -0.42 and multiply them in the zone's shade colour in one pass.
 - **Do** build field colour from the zone and material ramps in `js/kit.js`, light to dark, and outline people and small things in sprite-outline.
 - **Do** keep chrome as flat dark translucent panels with 1px hairlines: HUD at 86%, sheets and menus at 94%.
@@ -274,8 +274,8 @@ These appear only with the awareness aid on. Each is a radial wedge from an enem
 
 ### Don't:
 - **Don't** bring back the C64 look as the default. The 16-colour palette (`js/palette.js`) and the 16px tile art (`js/art.js`) are retired legacy, overridden by the kit, and the scanline overlay is only an opt-in player preference.
-- **Don't** flatten the view to straight top-down tokens: standing things show their roof and south face, and people stand upright.
-- **Don't** use glossy, bevelled or gradient-filled buttons, or cartoon gloss (PRODUCT.md: never a mobile game). The focused row's fading green wash is the only gradient in the chrome.
+- **Don't** flatten the view to straight top-down tokens: standing things show their roof and south face, and people are drawn upright, not as tokens.
+- **Don't** use glossy, bevelled or gradient-filled buttons, or cartoon gloss (PRODUCT.md: never a mobile game). The focused row's fading green wash is the only gradient on a control; elsewhere gradients are only the dims and shades behind windows and the title.
 - **Don't** use black or grey drop shadows for anything standing on the ground.
 - **Don't** set prose in the pixel face or use a system display face for the title mark.
 - **Don't** use glyph or emoji icons. Draw icons as pixel grids or small inline SVG.
