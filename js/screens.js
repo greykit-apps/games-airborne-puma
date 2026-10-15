@@ -1,7 +1,7 @@
-/* Airborne Puma -- the screens with words on them, each a whole C64 screen
- * of its own (css/airbornepuma.css): a title bar in reverse video, our 8x8
- * type, and the game's own pixel art inside: the ranger's portrait, rank
- * insignia, ribbons, and the ground itself from the map generator.
+/* Airborne Puma -- the screens with words on them: flat dark sheets over a
+ * dimmed field (css/airbornepuma.css), in the HUD's two typefaces, with the
+ * game's own pixel art inside: the ranger's portrait, rank insignia,
+ * ribbons, and the ground itself from the map generator.
  *
  * The 1987 order: report to the personnel officer (a practice ranger, or a
  * veteran from the roster), pick a mission, set the difficulty, read the

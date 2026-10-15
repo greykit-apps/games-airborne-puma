@@ -1,10 +1,10 @@
 /* Airborne Puma -- the art kit: what every picture on the play screen
- * shares. The play screen is 480 by 300, scaled up by whole numbers; a tile
- * is 24 pixels. The view is the 1987 game's: overhead, tilted, looking
- * north, so anything with height shows its top and its south face. The sun
- * is low in the south-west: shadows fall to the north-east, drawn by each
- * sprite as a separate shadow canvas the renderer multiplies over the
- * ground in one pass.
+ * shares. The play screen is 480 by 300, scaled up square-pixelled to fit
+ * the window (fit() in js/main.js); a tile is 24 pixels. The view is the
+ * 1987 game's: overhead, tilted, looking north, so anything with height
+ * shows its top and its south face. The sun is low in the south-west:
+ * shadows fall to the north-east, drawn by each sprite as a separate shadow
+ * canvas the renderer multiplies over the ground in one pass.
  *
  * Every sprite canvas may carry .sh (its shadow, opaque, any colour: the
  * renderer paints it in the zone's shadow colour) at .shx, .shy from the
