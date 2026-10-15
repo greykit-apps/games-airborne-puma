@@ -25,6 +25,7 @@ AP.C = {
   LAW: { speed: 0.45, range: 16, r: 1.4 },
   BOMB: { r: 2.6, sabotage: 30 },      /* seconds a bomb at the aviation fuel is set for: "midnight". UNCERTAIN */
   KNIFE: 1.3,
+  STAB: 16, STAB_HIT: 3,               /* ticks a thrust of the knife takes, before the next; and until it lands */
   NOISE: { run: 3, walk: 1.2, carbine: 14, boom: 20, arctic: 0.7 },
 
   /* the enemy. Sight stays inside the screen: nobody shoots from where he cannot be seen */

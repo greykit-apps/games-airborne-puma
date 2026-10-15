@@ -55,6 +55,7 @@
     nose: "#d48c80", noseD: "#4a2a22", wnose: "#1f1d20", tip: "#3a2618", wtip: "#2f2f35",
     red: "#d24c30", gold: "#e8c65c", rope: "#e0cf9f", ropeD: "#a8946a", band: "#f7f2e8",
     bandD: "#d6cdbb", visor: "#1f1c1a", flame: "#ff9a3c", flameHi: "#fff1b8", lens: "#9fe3ff",
+    guard: "#2e3035", blade: "#e8edf1", tipB: "#aab4bf",
   };
 
   /* ---- who wears what ----
@@ -232,23 +233,25 @@
 
   /* ---- the standing rig, x right of the feet, z up from the ground ----
    * Five headings; SW, W, NW are SE, E, NE mirrored. A arm is the
-   * figure's right (the trigger hand), B its left. */
+   * figure's right (the trigger hand), B its left. stab: the knife hand
+   * drawn back, then driven home, which way the blade points, and the gun
+   * carried low in the other hand meanwhile (like gun). */
   const W = 36, H = 34, CX = 18, FY = 31;
   const RIG = {
     S:  { dir: [0, 1], hw: 3, hx: 0, gun: [-3, 12, 0.36, -0.55], A: [[-5, 14], [-5, 11]], B: [[4, 14], [4, 10]],
-          tube: [-6, 18, -6, 12], pistol: [-3, 9], bound: [0, 9],
+          tube: [-6, 18, -6, 12], pistol: [-3, 9], bound: [0, 9], stab: [[-6, 11], [-5, 7], [-0.2, -1], [4, 12, 0.12, -1]],
           order: ["tail", "back", "legs", "torso", "head", "gun", "A", "B"] },
     SE: { dir: [Math.SQRT1_2, Math.SQRT1_2], hw: 3, hx: 0, gun: [-1, 11, 0.8, -0.45], A: [[-4, 14], [-4, 11]], B: [[3, 14], [4, 11]],
-          tube: [-5, 16, 6, 12], pistol: [3, 10], bound: [1, 9],
+          tube: [-5, 16, 6, 12], pistol: [3, 10], bound: [1, 9], stab: [[-5, 10], [4, 9], [0.85, -0.5], [2, 12, 0.05, -1]],
           order: ["tail", "back", "legs", "B", "torso", "head", "gun", "A"] },
     E:  { dir: [1, 0], hw: 2, hx: 1, gun: [-2, 11, 1, -0.05], A: [[0, 14], [-1, 11]], B: [[1, 14], [3, 11]],
-          tube: [-6, 15, 8, 15], pistol: [5, 12], bound: [2, 9],
+          tube: [-6, 15, 8, 15], pistol: [5, 12], bound: [2, 9], stab: [[-3, 11], [6, 12], [1, 0], [2, 12, 0.3, -0.95]],
           order: ["B", "tail", "back", "legs", "torso", "head", "gun", "A"] },
     NE: { dir: [Math.SQRT1_2, -Math.SQRT1_2], hw: 3, hx: 0, gun: [0, 11, 0.8, 0.45], A: [[3, 14], [4, 11]], B: [[-4, 14], [-4, 11]],
-          tube: [-3, 13, 6, 18], pistol: [4, 12], bound: [1, 10],
+          tube: [-3, 13, 6, 18], pistol: [4, 12], bound: [1, 10], stab: [[0, 12], [7, 15], [0.8, 0.6], [-4, 12, -0.15, -1]],
           order: ["gun", "B", "legs", "torso", "back", "head", "A", "tail"] },
     N:  { dir: [0, -1], hw: 3, hx: 0, gun: [1, 10, 0.55, 0.55], A: [[4, 14], [4, 11]], B: [[-5, 14], [-5, 11]],
-          tube: [5, 13, 6, 20], pistol: [3, 12], bound: [0, 10],
+          tube: [5, 13, 6, 20], pistol: [3, 12], bound: [0, 10], stab: [[5, 12], [7, 17], [0.25, 1], [-5, 12, -0.1, -1]],
           order: ["gun", "A", "B", "legs", "torso", "back", "head", "tail"] },
   };
   /* gun lengths and where the two hands hold them */
@@ -264,6 +267,8 @@
   };
   /* the walk: [right foot, left foot] along the heading, which foot is lifted, the body's bob */
   const STEP = [[2.8, -2.8, 0, 0, 0], [0.7, -0.7, 0, 1, 1], [-2.8, 2.8, 0, 0, 0], [-0.7, 0.7, 1, 0, 1]];
+  /* the stab: the right foot goes forward with the blow */
+  const LUNGE = [[0.7, -0.7, 0, 0, 0], [2.6, -1.8, 0, 0, 0], [1.5, -1.1, 0, 0, 0]];
 
   const U = (g, t, x, y, r = "uni") => ({ g, r, t, m: camo(x, y) });
   const brush = (B, x, y, w, h, cell, cam) => { for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) put(B, x + i, y + j, cam ? { ...cell, m: camo(x + i, y + j) } : cell); };
@@ -337,11 +342,12 @@
   /* ---- a standing or walking figure, into a grid ---- */
   const standing = (L, key, pose, frame, deadArms) => {
     const B = grid(W, H), rig = RIG[key], [dx, dy] = rig.dir, rx = -dy, ry = dx;
-    const walk = pose === "walk", st = walk ? STEP[frame & 3] : [0.7, -0.7, 0, 0, 0], bob = st[4];
+    const walk = pose === "walk", stab = pose === "stab" ? Math.min(2, frame) : -1;
+    const st = walk ? STEP[frame & 3] : stab >= 0 ? LUNGE[stab] : [0.7, -0.7, 0, 0, 0], bob = st[4];
     const Y = z => FY - z - bob, X = x => CX + x;
     const hw = rig.hw, wolfish = L.head === "wolf";
     const g = L.gun ? GUN[L.gun] : null;
-    const gp = rig.gun, gx0 = gp[0], gz0 = gp[1], gvx = gp[2], gvz = gp[3];
+    const gp = stab >= 0 ? rig.stab[3] : rig.gun, gx0 = gp[0], gz0 = gp[1], gvx = gp[2], gvz = gp[3];
     const along = d => [gx0 + gvx * d, gz0 + gvz * d];
     const swing = walk ? [0, 1, 0, -1][frame & 3] : 0;
 
@@ -405,15 +411,21 @@
       A() { arm("A"); },
       B() { arm("B"); },
     };
+    /* the knife in the fist at (x, z): the guard, then the blade, v the way it points */
+    const knife = (x, z, v, len) => {
+      const x0 = X(x) + (v[0] > 0.3 ? 1 : 0), y0 = Y(z);
+      for (let i = 1; i <= len; i++) put(B, Math.round(x0 + v[0] * i), Math.round(y0 - v[1] * i), { k: i === 1 ? C.guard : i === len ? C.tipB : C.blade, x: 1 });
+    };
     /* an arm: shoulder, elbow, hand */
     const hand = (x, z) => { const c = { r: "skin", t: 2, x: 1 }; put(B, X(x), Y(z), c); put(B, X(x) + 1, Y(z), c); };
     const arm = which => {
       const [sh, el] = rig[which], grp = "arm" + which;
       const far = parts.__far === which;
       let hx, hz, ex = el[0], ez = el[1];
-      const mode = deadArms ? "dead" : L.arms;
-      if (mode === "dead") { const s = Math.sign(sh[0]) || 1; ex = sh[0] + s * 2; ez = 12; hx = sh[0] + s * 3; hz = 10; }
-      else if (mode === "gun") { [hx, hz] = along(which === "A" ? g[1] : g[2]); }
+      const mode = deadArms ? "dead" : stab >= 0 && which === "A" ? "stab" : L.arms;
+      if (mode === "stab") { const [w, s] = rig.stab, k = [0, 1, 0.55][stab]; hx = w[0] + (s[0] - w[0]) * k; hz = w[1] + (s[1] - w[1]) * k; if (stab) { ex = (sh[0] + hx) / 2; ez = (sh[1] + hz) / 2 - 1; } }
+      else if (mode === "dead") { const s = Math.sign(sh[0]) || 1; ex = sh[0] + s * 2; ez = 12; hx = sh[0] + s * 3; hz = 10; }
+      else if (mode === "gun") { [hx, hz] = along(which === "A" || stab >= 0 ? g[1] : g[2]); }
       else if (mode === "tube") { const t = rig.tube, u = which === "A" ? 0.45 : 0.68; hx = t[0] + (t[2] - t[0]) * u; hz = t[1] + (t[3] - t[1]) * u - 1; ez = Math.min(ez, hz); }
       else if (mode === "pistol" && which === "A") { [hx, hz] = rig.pistol; }
       else if (mode === "bound") { hx = rig.bound[0] + (which === "A" ? -1 : 0); hz = rig.bound[1]; }
@@ -425,6 +437,7 @@
       if (L.gear === "officer") put(B, X(sh[0]), Y(14), { k: C.gold, x: 1 }), put(B, X(sh[0]) + 1, Y(14), { k: C.gold, x: 1 });
       if (L.gear === "civ") put(B, X(sh[0]) + 1, Y(9), { r: "uni", t: 1, x: 1 });
       hand(Math.round(hx - 0.5), Math.round(hz));
+      if (mode === "stab") knife(Math.round(hx - 0.5), Math.round(hz), rig.stab[2], stab === 1 ? 5 : 4);
       if (mode === "pistol" && which === "A") {
         const v = [gvx, gvz], px = Math.round(hx - 0.5), pz = Math.round(hz);
         weapon(B, "pistol", X(px + Math.sign(v[0]) * (Math.abs(v[0]) > 0.3 ? 2 : 0)), Y(pz), X(px + v[0] * 4 + (v[0] > 0.3 ? 2 : 0)), Y(pz + v[1] * 4));
@@ -456,7 +469,10 @@
         if (front) { put(B, X(-1 + (key === "SE" ? 1 : 0)), Y(13), fixed("uni", 0)); put(B, X(1 + (key === "SE" ? 1 : 0)), Y(13), fixed("uni", 0)); put(B, X(key === "SE" ? 1 : 0), Y(11), fixed("uni", 3)); put(B, X(key === "SE" ? 1 : 0), Y(9), fixed("uni", 3)); }
       }
     };
-    for (const p of rig.order) parts[p]();
+    /* while the knife is out, the far hand's gun goes behind the body with it */
+    let order = rig.order;
+    if (stab >= 0 && order.indexOf("B") < order.indexOf("torso")) { order = order.filter(p => p !== "gun"); order.splice(order.indexOf("B") + 1, 0, "gun"); }
+    for (const p of order) parts[p]();
     return B;
   };
 
@@ -573,12 +589,12 @@
   const OCT = [["E", 0], ["SE", 0], ["S", 0], ["SE", 1], ["E", 1], ["NE", 1], ["N", 0], ["NE", 0]];
   AP.personArt = (look, f, pose, frame) => {
     const L = LOOK[look] || LOOK.rifle, o = (((Math.round((f | 0) / 4)) % 8) + 8) % 8;
-    if (pose !== "walk" && pose !== "crawl") frame = 0;
+    if (pose !== "walk" && pose !== "crawl" && pose !== "stab") frame = 0;
     if (pose === "dead") { const east = AP.DIR32[(f | 0) & 31][0] >= 0; return K.get(`pd${look}${east ? 1 : 0}`, () => make(L, () => fallen(L, east), c => flatShadow(c, 2))); }
     const [key, mir] = OCT[o];
     if (pose === "crawl") return K.get(`pc${look}${o}${frame & 3}`, () => make(L, () => { const B = prone(L, key, frame); return mir ? flip(B, CW / 2) : B; }, c => flatShadow(c, 4)));
-    const p = pose === "walk" ? "walk" : "stand";
-    return K.get(`ps${look}${o}${p}${p === "walk" ? frame & 3 : 0}`, () => make(L, () => { const B = standing(L, key, p, frame); return mir ? flip(B, CX) : B; }, c => standShadow(c, CX, FY)));
+    const p = pose === "walk" || pose === "stab" ? pose : "stand";
+    return K.get(`ps${look}${o}${p}${p === "stand" ? 0 : frame & 3}`, () => make(L, () => { const B = standing(L, key, p, frame); return mir ? flip(B, CX) : B; }, c => standShadow(c, CX, FY)));
   };
   const make = (L, build, shade) => {
     const B = build();

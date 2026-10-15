@@ -120,7 +120,7 @@ function openGround(S, tile = T.OPEN) {
   const v = AP.newEnemy(S, { k: "rifle", x: S.player.x + 1, y: S.player.y, f: 0 });
   const n = AP.newEnemy(S, { k: "rifle", x: S.player.x + 6, y: S.player.y + 0.5, f: 0 });
   S.player.f = 0;
-  run(S, 3, { weapon: "knife", fire: 1 });
+  run(S, 3, { weapon: "knife", fire: 1 }); run(S, AP.C.STAB_HIT, {});
   check(v.dead && n.st === "post" && S.alert.lv === 0, "knife: a kill nobody hears");
 }
 {

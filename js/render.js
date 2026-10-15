@@ -77,6 +77,8 @@
     if (p.dead) return ["dead", 0];
     if (p.sub) return ["sub", 0];
     if (p.kd > 0 || p.crawl) return ["crawl", p.moving ? ((S.t / 9) | 0) & 3 : 0];
+    /* the knife: drawn back, driven home, recovered */
+    if (p.stab > 0) { const t = AP.C.STAB - p.stab; return ["stab", t < AP.C.STAB_HIT ? 0 : t < 10 ? 1 : 2]; }
     if (p.moving) return ["walk", (S.t / (p.run ? 4 : 7) | 0) & 3];
     return ["stand", 0];
   }

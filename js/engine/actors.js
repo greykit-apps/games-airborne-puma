@@ -12,7 +12,7 @@
   AP.newPlayer = (x, y) => ({
     x, y, f: 24, crawl: false, run: false, moving: false, tired: false, fat: 100, wounds: 0, kd: 0,
     weapon: "carbine", rnd: C.CARBINE.mag, ammo: { mag: C.START.mag - 1, gren: C.START.gren, law: C.START.law, bomb: C.START.bomb, aid: C.START.aid },
-    reload: 0, cool: 0, charge: 0, fuse: 10, aidT: 0, breath: C.BREATH, drownT: 0, sub: false, iceT: 0,
+    reload: 0, cool: 0, stab: 0, charge: 0, fuse: 10, aidT: 0, breath: C.BREATH, drownT: 0, sub: false, iceT: 0,
     disguised: false, pods: 0, burden: 0, dead: false, climbing: 0, aboard: false, pf: false, pu: false, pa: false, pr: false,
     stepT: 0, rotT: 0, fired: -999, photo: 0,
   });
@@ -76,6 +76,7 @@
     if (c.fuse) p.fuse = c.fuse;
     p.crawl = !!c.crawl;
     if (p.cool > 0) p.cool--;
+    if (p.stab > 0) p.stab--;
     if (p.reload > 0 && --p.reload === 0) { p.rnd = C.CARBINE.mag; S.ev.push({ t: "reloaded" }); }
 
     if (p.kd > 0) { p.kd--; p.moving = false; p.pf = false; return; }
