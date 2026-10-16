@@ -1,11 +1,11 @@
-/* Airborne Puma -- the screens with words on them, each a whole C64 screen
- * of its own (css/airbornepuma.css): a title bar in reverse video, our 8x8
- * type, and the game's own pixel art inside: the ranger's portrait, rank
- * insignia, ribbons, and the ground itself from the map generator.
+/* Airborne Puma -- the screens with words on them, each a map sheet laid
+ * over the field or the title (css/airbornepuma.css), with the game's own
+ * pixel art inside: the ranger's portrait, rank insignia, ribbons, and the
+ * ground itself from the map generator.
  *
  * The 1987 order: report to the personnel officer (a practice ranger, or a
  * veteran from the roster), pick a mission, set the difficulty, read the
- * orders, pack the supply pods, board the Osprey. Every step has a way back.
+ * flight plan, pack the supply pods, board the Osprey. Every step has a way back.
  * After the mission, the assessment: how the ranger came back, and why not,
  * the merit, the rank, the decorations, and a way to fly it again. */
 "use strict";
@@ -229,37 +229,83 @@
     function pick(d) { AP.prefs.diff = d; AP.savePrefs(); UI.close(true); then(d); }
   };
 
-  /* ---- 4. the orders, and the pods ---- */
+  /* ---- 4. the flight plan, and the pods ---- */
   const tally = pods => {
     const n = {}; for (const p of pods) for (const k of p) n[k] = (n[k] || 0) + 1;
     return C.POD_ITEMS.filter(k => n[k]).map(k => `${n[k]} ${ITEMS[k][n[k] === 1 ? 0 : 1]}`).join(", ");
   };
+  const SLOT = { mag: "Magazine", gren: "Grenade", law: "LAW", bomb: "Time bomb", aid: "First aid" };
+  const slotHTML = it => AP.HUD.icon(it, 3) + `<span>${esc(SLOT[it])}</span>`;
+  /* the whole mission area, px pixels a tile, turned a quarter to the left so
+   * it reads along the Osprey's track as a strip chart does: north (the
+   * objective) at the left, the drop zone at the right. Ground a pod would be
+   * lost on is hatched in grease pencil. */
+  function flightStrip(map, px) {
+    const w = map.w, h = map.h, src = AP.Render.thumb(map, map.zone, 0, h, px);
+    const c = AP.K.mk(h * px, w * px), g = c.getContext("2d");
+    g.save(); g.translate(0, w * px); g.rotate(-Math.PI / 2); g.drawImage(src, 0, 0); g.restore();
+    const pat = AP.K.mk(4, 4), pg = pat.getContext("2d");
+    pg.fillStyle = "rgba(176,46,37,.85)"; for (let i = 0; i < 4; i++) pg.fillRect(i, 3 - i, 1, 1);
+    g.fillStyle = g.createPattern(pat, "repeat");
+    for (let ty = 0; ty < h; ty++) for (let tx = 0; tx < w; tx++) {
+      if (AP.tileAt(map, tx, ty) === AP.T.BAD || AP.podSafe(map, tx, ty)) continue;
+      g.fillRect(ty * px, (w - 1 - tx) * px, px, px);
+    }
+    return c;
+  }
+  /* the grease-pencil marks over the strip, in its own pixels: a loop round
+   * the objective, a cross on the pickup, the track, a box round the drop zone */
+  function flightMarks(map, px, targets) {
+    const w = map.w, W = map.h * px, Hh = w * px, g = map.goal, z = map.drop, pk = map.pickup;
+    const X = y => y * px, Y = x => (w - x) * px, f = n => n.toFixed(1);
+    const gx0 = X(g.y0), gx1 = X(g.y1), gy0 = Y(g.x1), gy1 = Y(g.x0);
+    const cx = (gx0 + gx1) / 2, cy = (gy0 + gy1) / 2, rx = (gx1 - gx0) / 2 + 2 * px, ry = Math.min(Hh / 2 - 3, (gy1 - gy0) / 2 + 2 * px);
+    const kx = X(pk.y), ky = Y(pk.x), r = 1.2 * px;
+    const ty = Y(w / 2 + 0.5), t0 = X(g.y1 + 3), t1 = X(z.y0 - 2);
+    const zx0 = X(z.y0), zx1 = X(z.y1), zy0 = Y(z.x1), zy1 = Y(z.x0);
+    const pct = (v, of) => `${(v / of * 100).toFixed(2)}%`;
+    const svg = `<svg viewBox="0 0 ${W} ${Hh}" aria-hidden="true" fill="none" stroke-linecap="round"><defs><filter id="fp-rough"><feTurbulence baseFrequency=".9" numOctaves="2" seed="3"/><feDisplacementMap in="SourceGraphic" scale="2.4"/></filter></defs><g filter="url(#fp-rough)">
+      <ellipse cx="${f(cx)}" cy="${f(cy)}" rx="${f(rx)}" ry="${f(ry)}" stroke="#b02e25" stroke-width="3.2"/>
+      <path d="M${f(kx - r)} ${f(ky - r)}L${f(kx + r)} ${f(ky + r)}M${f(kx + r)} ${f(ky - r)}L${f(kx - r)} ${f(ky + r)}" stroke="#b02e25" stroke-width="3.2"/>
+      <path d="M${f(t0)} ${f(ty)}H${f(t1)}" stroke="#22201b" stroke-width="2.6" stroke-dasharray="14 9"/>
+      <path d="M${f(t1)} ${f(ty)}l-14 -8M${f(t1)} ${f(ty)}l-14 8" stroke="#22201b" stroke-width="2.6"/>
+      <rect x="${f(zx0)}" y="${f(zy0)}" width="${f(zx1 - zx0)}" height="${f(zy1 - zy0)}" stroke="#22201b" stroke-width="2.6" stroke-dasharray="10 6"/></g></svg>`;
+    const note = (x, y, text, cls = "") => `<span class="fp-note ${cls}" style="left:${pct(x, W)};top:${pct(y, Hh)}">${text}</span>`;
+    return svg +
+      note(cx + rx * 0.55, 4, targets > 1 ? `Objective · ${targets} targets` : "Objective") +
+      note(kx + r + 4, ky - 9, "pickup") +
+      note((t0 + t1) / 2 - (px < 5 ? 50 : 150), ty - 30, px < 5 ? "Osprey track" : "Osprey track: kick the pods out over clear ground", "ink") +
+      note(zx0 + 8, zy0 + 8, px < 5 ? "DZ: jump" : "DZ: jump on the green light", "ink");
+  }
   UI.briefing = (run, back) => {
     const m = AP.MISSION[run.mission], r = run.rangerId ? AP.Roster.get(run.rangerId) : null, z = AP.ZONES[m.zone];
     const pods = run.pods, clock = m.clock || C.CLOCK_S;
-    /* the reconnaissance photo: the objective, from this mission's own map */
     const map = AP.genMap({ mission: run.mission, diff: run.diff, seed: run.seed }), g = map.goal;
+    /* as large as the sheet has room for, in whole pixels a tile */
+    const room = Math.min(1180, innerWidth - 64) - 120, px = AP.clamp(Math.floor(room / map.h), 3, 6);
+    const strip = AP.artURL(flightStrip(map, px));
+    const targets = map.objs.filter(o => AP.OBJ[o.k].target && !o.hidden).length;
+    /* the enlargement: the objective, from the same map */
     const recon = AP.artURL(AP.Render.thumb(map, map.zone, Math.max(0, g.y0), Math.min(20, g.y1 - g.y0), 8));
     const slotLabel = (i, j, it) => `Pod ${i + 1}, slot ${j + 1}: ${ITEM[it]}. Click for the next item, right-click for the one before.`;
-    UI.open("Mission orders", { wide: true, back,
-      html: () => `<h3 class="mname">${m.n}. ${esc(m.name)}</h3>
-        <p class="meta">${run.campaign ? `Campaign, mission ${(r.campaign.next || 0) + 1} of 12 · ` : ""}${esc(z.name)} · ${esc(C.DIFF.name[run.diff])} · ${Math.floor(clock / 60)}:${String(clock % 60).padStart(2, "0")} on the clock · ${r ? `${esc(AP.rankName(r.rank))} ${esc(r.name)}` : "practice ranger"}</p>
-        <div class="orders"><div class="text">
-          <p>${esc(m.brief)}</p>
-          <p><b>Goal:</b> ${esc(m.goalText)}.</p>
-          <p class="note">${esc(z.note)}${m.recall === false ? " The Osprey cannot be recalled on this mission." : ""}</p>
-        </div><figure class="recon"><img class="px" src="${recon}" alt="Reconnaissance photograph of the objective" width="320" height="${Math.min(20, g.y1 - g.y0) * 8}"><figcaption>Reconnaissance: the objective, north end of the area.</figcaption></figure></div>
-        <h3>Supply pods</h3>
-        <p class="note">Three pods, four things in each. Kick them out over open ground on the way in: a pod that lands in a ditch, on rocks or trees, on wire or in water is lost. Click a slot for the next item; right-click for the one before.</p>
-        <div class="pods">${pods.map((p, i) => `<div class="pod" role="group" aria-label="Pod ${i + 1}"><span>Pod ${i + 1}</span>${p.map((it, j) => `<button data-slot="${i}.${j}" class="it-${it}" aria-label="${esc(slotLabel(i, j, it))}">${esc(ITEM[it])}</button>`).join("")}</div>`).join("")}</div>
-        <p class="kit"><b>You land with</b> a carbine and 4 magazines, 3 grenades, 1 LAW rocket, 1 time bomb, 1 first aid kit, and the knife.<br><b>In the pods:</b> <span id="ap-tally">${tally(pods)}</span>.</p>
-        <div class="row end"><button data-act="go" class="primary">Board the Osprey</button></div>`,
+    UI.open(`${m.n}. ${m.name}`, { wide: true, back,
+      html: () => `<div class="fp-head"><p class="marg">Flight plan · ${run.campaign ? `Campaign, mission ${(r.campaign.next || 0) + 1} of 12 · ` : ""}${esc(z.name)} · ${esc(C.DIFF.name[run.diff])} · ${r ? `${esc(AP.rankName(r.rank))} ${esc(r.name)}` : "practice ranger"}</p>
+          <div class="fp-clock"><span class="marg">On the<br>clock</span><span class="num">${Math.floor(clock / 60)}:${String(clock % 60).padStart(2, "0")}</span></div><button data-act="go" class="primary">Board the Osprey</button></div>
+        <div class="fp-strip"><p class="marg fp-north" aria-hidden="true">◀<br>N</p><img class="px" src="${strip}" width="${map.h * px}" height="${map.w * px}" alt="The mission area from north to south, turned to read left to right: the objective at the left, the drop zone at the right.">${flightMarks(map, px, targets)}</div>
+        <div class="fp-scale"><span class="fp-bar" aria-hidden="true">${`<i style="width:${10 * px}px"></i>`.repeat(3)}</span><span class="marg">0 · 10 · 20 · 30 tiles</span><span class="marg" style="margin-left:18px"><i class="fp-hatch"></i> a pod is lost here</span><span class="marg" style="margin-left:18px">Turned to the track: read left to right</span></div>
+        <div class="fp-cols">
+          <div><h3>Situation</h3><p>${esc(m.brief)}</p><p class="note">${esc(z.note)}${m.recall === false ? " The Osprey cannot be recalled on this mission." : ""}</p></div>
+          <div><h3>Enlargement · objective</h3><figure class="recon"><img class="px" src="${recon}" alt="Reconnaissance photograph of the objective" width="320" height="${Math.min(20, g.y1 - g.y0) * 8}"></figure><p class="fp-goal">Goal: ${esc(m.goalText)}.</p></div>
+          <div><h3>Supply pods <span>click to change</span></h3>
+            <div class="pods">${pods.map((p, i) => `<div class="pod" role="group" aria-label="Pod ${i + 1}"><span aria-hidden="true">${i + 1}</span>${p.map((it, j) => `<button data-slot="${i}.${j}" aria-label="${esc(slotLabel(i, j, it))}">${slotHTML(it)}</button>`).join("")}</div>`).join("")}</div>
+            <p class="kit"><b>In the pods:</b> <span id="ap-tally">${tally(pods)}</span>. <b>You land with</b> a carbine and 4 magazines, 3 grenades, 1 LAW rocket, 1 time bomb, 1 first aid kit, and the knife. Right-click a slot for the item before.</p></div>
+        </div>`,
       onClick: (b, api, ev, prev) => {
         if (b.dataset.slot) {
           const [i, j] = b.dataset.slot.split(".").map(Number), list = C.POD_ITEMS;
           const step = prev || (ev && ev.shiftKey) ? list.length - 1 : 1;
           pods[i][j] = list[(list.indexOf(pods[i][j]) + step) % list.length];
-          b.className = "it-" + pods[i][j]; b.textContent = ITEM[pods[i][j]]; b.setAttribute("aria-label", slotLabel(i, j, pods[i][j]));
+          b.innerHTML = slotHTML(pods[i][j]); b.setAttribute("aria-label", slotLabel(i, j, pods[i][j]));
           const t = document.getElementById("ap-tally"); if (t) t.textContent = tally(pods);
           AP.game.saveBriefing(run);
           return;

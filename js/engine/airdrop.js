@@ -61,13 +61,19 @@
       if (p.z > 0) continue;
       p.done = true;
       const tx = Math.floor(p.x), ty = Math.floor(p.y), t = AP.tileAt(map, tx, ty);
-      const ok = AP.TILE[t].walk && ![T.TRENCH, T.WIRE, T.MINE, T.WATER, T.THIN, T.BAD, T.PIPE].includes(t) && !AP.objAt(map, tx, ty);
+      const ok = AP.podSafe(map, tx, ty);
       if (t === T.MINE) AP.explode(S, tx + 0.5, ty + 0.5, 1.2, "mine", "x");
       if (ok) { S.items.push({ id: S.nextId++, k: "pod", x: p.x, y: p.y, contents: S.pods[p.i].slice(), taken: false }); S.ev.push({ t: "podLanded", x: p.x, y: p.y }); }
       else S.ev.push({ t: "podLost", x: p.x, y: p.y });
     }
     d.falling = d.falling.filter(p => !p.done);
   };
+
+  /* a pod comes down whole on open ground: not in a ditch, on a rock, a
+   * tree, wire or water, not in a minefield, not on an installation. The
+   * flight plan hatches everywhere this is false. */
+  const POD_LOST = [T.TRENCH, T.WIRE, T.MINE, T.WATER, T.THIN, T.BAD, T.PIPE];
+  AP.podSafe = (map, tx, ty) => { const t = AP.tileAt(map, tx, ty); return AP.TILE[t].walk && !POD_LOST.includes(t) && !AP.objAt(map, tx, ty); };
 
   /* the nearest place a ranger can stand */
   AP.nearestStand = (map, x, y) => {

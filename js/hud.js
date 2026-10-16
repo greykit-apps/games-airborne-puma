@@ -1,5 +1,6 @@
-/* Airborne Puma -- what is written over the play screen: flat dark panels
- * at the corners of the field, in the page, over the canvas.
+/* Airborne Puma -- what is written over the play screen: paper labels
+ * pinned at the corners of the field, in the page, over the canvas; the
+ * icons are drawn in ink, as on the map sheet.
  *
  * Top left, the 1987 indicators: the clock, the wounds, the fatigue, how the
  * ranger is moving. Bottom left, the weapon in hand and what is left of
@@ -21,19 +22,19 @@
 
   /* ---- pixel icons ---- */
   const ICONS = {
-    clock: [["..xxxxx..", ".x.....x.", "x...x...x", "x...x...x", "x...xx..x", "x.......x", "x.......x", ".x.....x.", "..xxxxx.."], { x: "#e9e4d8" }],
-    woundOn: [["..xxx..", "..xhx..", "xxxhxxx", "xhhhhhx", "xxxhxxx", "..xhx..", "..xxx.."], { x: "#e4572e", h: "#ff8a63" }],
-    woundOff: [["..xxx..", "..x.x..", "xxx.xxx", "x.....x", "xxx.xxx", "..x.x..", "..xxx.."], { x: "rgba(233,228,216,.4)" }],
-    eye: [["..xxxxx..", ".x..x..x.", "x..xxx..x", ".x..x..x.", "..xxxxx.."], { x: "#e9e4d8" }],
-    carbine: [["........aa.........a..", "aaa....abbaaaaaaaaaa..", "abbaaaabbbbbbccbbbbaaa", "abbbbbbbbbbbbccbbbbb..", "abbaaaaccbbccaaaaaa...", "aba.....cc..cc........", "aa......cc...cc.......", ".........c....cc......"], { a: "#e9e4d8", b: "#a8a294", c: "#77726a" }],
-    mag: [["aaaaa.", "abbba.", "abbba.", ".abbba", ".abbba", ".abbba", "..abba", "..cccc"], { a: "#e9e4d8", b: "#8f8a80", c: "#c9c3b6" }],
-    gren: [["..ccc..", "...ac.c", "..aaa..", ".abbba.", "abbabba", "abababa", "abbabba", ".abbba.", "..aaa.."], { a: "#e9e4d8", b: "#8e9a68", c: "#b9b3a6" }],
-    law: [["..aa..........aa..", "aaaaaaaaaaaaaaaaaa", "abbbbbbbccbbbbbbba", "aaaaaaaaaaaaaaaaaa", "......c..c........"], { a: "#e9e4d8", b: "#8e9a68", c: "#a8a294" }],
-    knife: [["aaaaaaaaabbbbb.", ".aaaaaaa.bbbbbb"], { a: "#e9e4d8", b: "#8a6a48" }],
-    bomb: [["....c....", "aaaaaaaaa", "abbbbbbba", "abbdbdbba", "abbbbbbba", "aaaaaaaaa"], { a: "#e9e4d8", b: "#a9824f", c: "#e4572e", d: "#e8a33d" }],
-    aid: [["aaaaaaa", "aaacaaa", "aacccaa", "aaacaaa", "aaaaaaa"], { a: "#e9e4d8", c: "#e4572e" }],
-    pod: [["aaaaaaaa", "abbbbbba", "abaaaaba", "abbbbbba", "aaaaaaaa"], { a: "#e9e4d8", b: "#a9824f" }],
-    chev: [["x...", "xx..", "xxx.", "xxxx", "xxx.", "xx..", "x..."], { x: "#7fb069" }],
+    clock: [["..xxxxx..", ".x.....x.", "x...x...x", "x...x...x", "x...xx..x", "x.......x", "x.......x", ".x.....x.", "..xxxxx.."], { x: "#22201b" }],
+    woundOn: [["..xxx..", "..xhx..", "xxxhxxx", "xhhhhhx", "xxxhxxx", "..xhx..", "..xxx.."], { x: "#b02e25", h: "#e4572e" }],
+    woundOff: [["..xxx..", "..x.x..", "xxx.xxx", "x.....x", "xxx.xxx", "..x.x..", "..xxx.."], { x: "rgba(34,32,27,.4)" }],
+    eye: [["..xxxxx..", ".x..x..x.", "x..xxx..x", ".x..x..x.", "..xxxxx.."], { x: "#22201b" }],
+    carbine: [["........aa.........a..", "aaa....abbaaaaaaaaaa..", "abbaaaabbbbbbccbbbbaaa", "abbbbbbbbbbbbccbbbbb..", "abbaaaaccbbccaaaaaa...", "aba.....cc..cc........", "aa......cc...cc.......", ".........c....cc......"], { a: "#22201b", b: "#8a8476", c: "#5d5850" }],
+    mag: [["aaaaa.", "abbba.", "abbba.", ".abbba", ".abbba", ".abbba", "..abba", "..cccc"], { a: "#22201b", b: "#8f8a80", c: "#5d5850" }],
+    gren: [["..ccc..", "...ac.c", "..aaa..", ".abbba.", "abbabba", "abababa", "abbabba", ".abbba.", "..aaa.."], { a: "#22201b", b: "#7d8a52", c: "#5d5850" }],
+    law: [["..aa..........aa..", "aaaaaaaaaaaaaaaaaa", "abbbbbbbccbbbbbbba", "aaaaaaaaaaaaaaaaaa", "......c..c........"], { a: "#22201b", b: "#7d8a52", c: "#5d5850" }],
+    knife: [["aaaaaaaaabbbbb.", ".aaaaaaa.bbbbbb"], { a: "#5d5850", b: "#7a5634" }],
+    bomb: [["....c....", "aaaaaaaaa", "abbbbbbba", "abbdbdbba", "abbbbbbba", "aaaaaaaaa"], { a: "#22201b", b: "#a9824f", c: "#b02e25", d: "#e8a33d" }],
+    aid: [["aaaaaaa", "abbcbba", "abcccba", "abbcbba", "aaaaaaa"], { a: "#22201b", b: "#f4efdc", c: "#b02e25" }],
+    pod: [["aaaaaaaa", "abbbbbba", "abaaaaba", "abbbbbba", "aaaaaaaa"], { a: "#22201b", b: "#a9824f" }],
+    chev: [["x...", "xx..", "xxx.", "xxxx", "xxx.", "xx..", "x..."], { x: "#2b6e31" }],
   };
   const iconURL = new Map();
   function icon(name, s = 2, cls = "") {
@@ -193,7 +194,6 @@
     const ty0 = AP.clamp(Math.floor(p.y) - span / 2, 0, map.h - span);
     g.imageSmoothingEnabled = true;
     g.drawImage(sm, 0, ty0 * k, map.w * k, span * k, 0, 0, W, Hh);
-    g.fillStyle = "rgba(20,22,28,.38)"; g.fillRect(0, 0, W, Hh);
     const sx = W / map.w, sy = Hh / span, at = (x, y) => [x * sx, (y - ty0) * sy];
     for (const o of map.objs) if (AP.OBJ[o.k].target && !o.hidden) { const [X, Y] = at(o.x, o.y); g.strokeStyle = o.dead ? UI.green : UI.red; g.lineWidth = 1.5; g.strokeRect(Math.round(X) + 0.5, Math.round(Y) + 0.5, Math.max(3, o.w * sx), Math.max(3, o.h * sy)); }
     for (const it of S.items) if (!it.taken) { const [X, Y] = at(it.x, it.y); g.fillStyle = "#cfd59a"; g.fillRect(Math.round(X) - 1, Math.round(Y) - 1, 3, 3); }
@@ -201,7 +201,7 @@
     g.strokeStyle = UI.green; g.lineWidth = 1.5; g.beginPath(); g.moveTo(kx - 4, ky - 4); g.lineTo(kx + 4, ky + 4); g.moveTo(kx + 4, ky - 4); g.lineTo(kx - 4, ky + 4); g.stroke();
     /* the field of view, and the ranger */
     const cam = AP.Render.cam, [vx, vy] = at(cam.x / K.TS, cam.y / K.TS);
-    g.strokeStyle = "rgba(233,228,216,.35)"; g.lineWidth = 1; g.strokeRect(Math.round(vx) + 0.5, Math.round(vy) + 0.5, K.VW / K.TS * sx, K.VH / K.TS * sy);
+    g.strokeStyle = "rgba(34,32,27,.6)"; g.lineWidth = 1; g.strokeRect(Math.round(vx) + 0.5, Math.round(vy) + 0.5, K.VW / K.TS * sx, K.VH / K.TS * sy);
     const [px, py] = at(p.x, p.y);
     /* a dashed line to the nearest target still standing, and north */
     let next = null, nd = Infinity;
@@ -210,11 +210,11 @@
       const [tx, ty] = at(next.x + next.w / 2, next.y + next.h / 2), a = Math.atan2(ty - py, tx - px), L = Math.min(Math.hypot(tx - px, ty - py) - 6, 70);
       if (L > 8) {
         const ex = px + Math.cos(a) * L, ey = py + Math.sin(a) * L;
-        g.strokeStyle = "#e9e4d8"; g.lineWidth = 1.5; g.setLineDash([3, 2]); g.beginPath(); g.moveTo(px, py); g.lineTo(ex, ey); g.stroke(); g.setLineDash([]);
-        g.fillStyle = "#e9e4d8"; g.beginPath(); g.moveTo(ex + Math.cos(a) * 5, ey + Math.sin(a) * 5); g.lineTo(ex + Math.cos(a + 2.5) * 5, ey + Math.sin(a + 2.5) * 5); g.lineTo(ex + Math.cos(a - 2.5) * 5, ey + Math.sin(a - 2.5) * 5); g.closePath(); g.fill();
+        g.strokeStyle = "#22201b"; g.lineWidth = 1.5; g.setLineDash([3, 2]); g.beginPath(); g.moveTo(px, py); g.lineTo(ex, ey); g.stroke(); g.setLineDash([]);
+        g.fillStyle = "#22201b"; g.beginPath(); g.moveTo(ex + Math.cos(a) * 5, ey + Math.sin(a) * 5); g.lineTo(ex + Math.cos(a + 2.5) * 5, ey + Math.sin(a + 2.5) * 5); g.lineTo(ex + Math.cos(a - 2.5) * 5, ey + Math.sin(a - 2.5) * 5); g.closePath(); g.fill();
       }
     }
-    g.fillStyle = "rgba(233,228,216,.7)"; g.font = "500 10px 'Pixelify Sans', monospace"; g.textBaseline = "top"; g.fillText("N", 6, 4); g.fillRect(8, 16, 1, 5);
+    g.fillStyle = "#22201b"; g.font = "500 10px 'Pixelify Sans', monospace"; g.textBaseline = "top"; g.fillText("N", 6, 4); g.fillRect(8, 16, 1, 5);
     g.fillStyle = "#14161c"; g.fillRect(Math.round(px) - 3, Math.round(py) - 3, 6, 6);
     g.fillStyle = (AP.Render.frame >> 4) & 1 ? UI.green : "#e9e4d8"; g.fillRect(Math.round(px) - 2, Math.round(py) - 2, 4, 4);
     const tg = map.objs.filter(o => AP.OBJ[o.k].target && !o.hidden);

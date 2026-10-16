@@ -51,9 +51,11 @@
       ],
     };
   }
-  /* the title: the battlefield behind, the name, and the menu in a panel of
-   * its own: a key, the item, what it says about itself; Settings, Help and
-   * About on one line under the rest */
+  /* the title: the battlefield behind, and over it a map sheet: the margin
+   * data, the name, and the menu as the sheet's legend: a key, the item, a
+   * dotted leader to what it says about itself; Settings, Help and About on
+   * one line under the rest. The foot carries the declination diagram. */
+  const DECLINATION = '<svg viewBox="0 0 54 70" width="34" height="44" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M14 66V13M14 66L36 17"/><path d="M14 4l4 8h-8zM37 9l2 9-7-4z" fill="currentColor" stroke="none"/><path d="M22 48a12 12 0 0 1 6-6" stroke-width="1.2"/></svg>';
   function titleHTML(cfg) {
     const items = cfg.items.filter(Boolean), gap = items.indexOf("gap");
     const main = items.slice(0, gap), util = items.slice(gap + 1);
@@ -63,12 +65,14 @@
     const [a, b] = cfg.name.split(" ");
     return `<div class="ap-title">
       <canvas class="ap-scene" aria-hidden="true"></canvas><div class="ap-shade" aria-hidden="true"></div>
-      <main>
+      <main><div class="ap-menu-sheet">
+        <div class="ap-edge" aria-hidden="true"><span class="marg">Series P87 · Edition 2</span><span class="marg">1:25 000</span></div>
         <h1 class="ap-mark" aria-label="${esc(cfg.name)}"><span>${esc(a)}</span> <span class="puma">${esc(b)}</span></h1>
         <p class="ap-sub">Behind Enemy Lines</p>
+        <p class="marg legend" aria-hidden="true">Legend</p>
         <nav class="ap-menu" aria-label="Main menu">${main.map(it => btn(it, true)).join("")}<div class="util">${util.map(it => btn(it, false)).join("")}</div></nav>
-      </main>
-      <footer class="ap-foot"><span class="gk-credit">${UI.CREDIT}</span></footer>
+        <footer class="ap-foot">${DECLINATION}<span>Grid zone 34R · declination 4° east<br><span class="gk-credit">${UI.CREDIT}</span></span></footer>
+      </div></main>
     </div>`;
   }
   function openTitle() {
