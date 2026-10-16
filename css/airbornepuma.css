@@ -61,7 +61,7 @@ button { font: 600 16px/1.2 var(--ui); font-stretch: 85%; color: var(--ap-ink); 
 button:focus { outline: none; background: var(--ap-ink); color: var(--ap-paper); }
 button:disabled { opacity: .45; cursor: default; }
 button.primary { background: var(--ap-ink); color: var(--ap-paper); }
-button.primary:focus { background: var(--ap-grease); border-color: var(--ap-grease); color: var(--ap-paper); box-shadow: 3px 3px 0 var(--ap-ink); }
+button.primary:focus { background: var(--ap-ink); color: var(--ap-paper); box-shadow: 4px 4px 0 var(--ap-grease); }
 button.danger { border-color: var(--ap-red); color: var(--ap-red); }
 button.danger:focus { background: var(--ap-red); color: var(--ap-paper); }
 button.quiet { border-color: transparent; color: var(--ap-muted); }

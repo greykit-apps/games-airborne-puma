@@ -1,55 +1,63 @@
 ---
 name: Airborne Puma
-description: Airborne Ranger's tilted overhead battlefield redrawn as modern hi-bit pixel art, under calm dark panels.
+description: Airborne Ranger's tilted overhead battlefield redrawn as modern hi-bit pixel art, under a paper map sheet marked in grease pencil.
 colors:
-  signal-green: "#7fb069"
-  signal-green-lit: "#9fcf88"
-  suspicion-amber: "#e8a33d"
-  danger-red-orange: "#e4572e"
-  danger-text: "#ff9475"
-  puma-tawny: "#d8a868"
-  night-page: "#0c0d11"
-  field-panel: "rgba(20,22,28,.94)"
-  hud-panel: "rgba(20,22,28,.86)"
-  panel-ink: "#14161c"
-  control-rest: "#1c1f27"
-  control-lit: "#262a35"
-  bone-text: "#e9e4d8"
-  dust-muted: "#aaa69c"
-  dust-faint: "#8f8b82"
-  hairline: "rgba(233,228,216,.10)"
-  edge-line: "rgba(233,228,216,.18)"
+  map-stock: "#ebe5cc"
+  map-inset: "#e4ddc2"
+  input-stock: "#f4efdc"
+  ink: "#22201b"
+  ink-muted: "#5a5446"
+  ink-faint: "#6b6452"
+  hairline: "rgba(34,32,27,.22)"
+  edge-line: "rgba(34,32,27,.55)"
+  grid-blue: "rgba(70,98,120,.2)"
+  contour-brown: "#96683a"
+  grease-red: "#b02e25"
+  ready-green: "#2b6e31"
+  suspicion-amber: "#8a520a"
+  danger-red: "#b02e25"
+  puma-tawny: "#8f5420"
+  night-page: "#1a1812"
   sprite-outline: "#1d1917"
   desert-shade: "#9893d2"
   temperate-shade: "#8f9ab8"
   arctic-shade: "#9fb0d8"
 typography:
   display:
-    fontFamily: "Barlow Semi Condensed, Bahnschrift SemiCondensed, Bahnschrift, Arial Narrow, Segoe UI, system-ui, sans-serif"
-    fontSize: "clamp(56px, 6.4vw, 92px)"
-    fontWeight: 700
-    lineHeight: 0.9
-    letterSpacing: "0.005em"
+    fontFamily: "Archivo, Arial Narrow, Helvetica Neue, Arial, system-ui, sans-serif"
+    fontSize: "clamp(64px, 6.8vw, 96px)"
+    fontWeight: 800
+    fontStretch: "66%"
+    lineHeight: 0.84
   headline:
-    fontFamily: "Barlow Semi Condensed, Bahnschrift SemiCondensed, Bahnschrift, Arial Narrow, Segoe UI, system-ui, sans-serif"
-    fontSize: "26px"
-    fontWeight: 600
-    lineHeight: 1.1
+    fontFamily: "Archivo, Arial Narrow, Helvetica Neue, Arial, system-ui, sans-serif"
+    fontSize: "30px"
+    fontWeight: 800
+    fontStretch: "70%"
+    lineHeight: 1.05
   title:
-    fontFamily: "Barlow Semi Condensed, Bahnschrift SemiCondensed, Bahnschrift, Arial Narrow, Segoe UI, system-ui, sans-serif"
-    fontSize: "24px"
-    fontWeight: 600
-    lineHeight: 1.15
+    fontFamily: "Archivo, Arial Narrow, Helvetica Neue, Arial, system-ui, sans-serif"
+    fontSize: "26px"
+    fontWeight: 800
+    fontStretch: "72%"
+    lineHeight: 1.1
   body:
-    fontFamily: "Barlow Semi Condensed, Bahnschrift SemiCondensed, Bahnschrift, Arial Narrow, Segoe UI, system-ui, sans-serif"
+    fontFamily: "Archivo, Arial Narrow, Helvetica Neue, Arial, system-ui, sans-serif"
     fontSize: "16px"
     fontWeight: 500
+    fontStretch: "88%"
     lineHeight: 1.45
   label:
-    fontFamily: "Barlow Semi Condensed, Bahnschrift SemiCondensed, Bahnschrift, Arial Narrow, Segoe UI, system-ui, sans-serif"
+    fontFamily: "Archivo, Arial Narrow, Helvetica Neue, Arial, system-ui, sans-serif"
     fontSize: "12px"
-    fontWeight: 600
-    letterSpacing: "0.14em"
+    fontWeight: 700
+    fontStretch: "80%"
+    letterSpacing: "0.16em"
+  grease:
+    fontFamily: "Kalam, Segoe Print, Bradley Hand, cursive"
+    fontSize: "18px to 21px"
+    fontWeight: 400
+    lineHeight: 1.1
   numeral:
     fontFamily: "Pixelify Sans, ui-monospace, monospace"
     fontSize: "34px"
@@ -61,11 +69,7 @@ typography:
     fontWeight: 400
     lineHeight: 1
 rounded:
-  pixel: "2px"
-  key: "3px"
-  control: "4px"
-  panel: "6px"
-  sheet: "8px"
+  everything: "0"
 spacing:
   xs: "4px"
   sm: "8px"
@@ -74,208 +78,200 @@ spacing:
   xl: "32px"
 components:
   button:
-    backgroundColor: "{colors.control-rest}"
-    textColor: "{colors.bone-text}"
-    typography: "{typography.body}"
-    rounded: "{rounded.control}"
+    backgroundColor: "transparent"
+    textColor: "{colors.ink}"
+    border: "1.5px solid {colors.ink}"
     padding: "8px 16px"
   button-focus:
-    backgroundColor: "{colors.control-lit}"
-    textColor: "{colors.bone-text}"
+    backgroundColor: "{colors.ink}"
+    textColor: "{colors.map-stock}"
   button-primary:
-    backgroundColor: "{colors.signal-green}"
-    textColor: "{colors.panel-ink}"
-    rounded: "{rounded.control}"
-    padding: "8px 16px"
+    backgroundColor: "{colors.ink}"
+    textColor: "{colors.map-stock}"
   button-primary-focus:
-    backgroundColor: "{colors.signal-green-lit}"
-    textColor: "{colors.panel-ink}"
+    backgroundColor: "{colors.ink}"
+    textColor: "{colors.map-stock}"
+    shadow: "4px 4px 0 {colors.grease-red}"
   button-danger:
-    textColor: "{colors.danger-text}"
-    rounded: "{rounded.control}"
-    padding: "8px 16px"
+    textColor: "{colors.danger-red}"
+    border: "1.5px solid {colors.danger-red}"
   button-danger-focus:
-    backgroundColor: "{colors.danger-red-orange}"
-    textColor: "{colors.panel-ink}"
+    backgroundColor: "{colors.danger-red}"
+    textColor: "{colors.map-stock}"
   button-quiet:
-    textColor: "{colors.dust-muted}"
-    rounded: "{rounded.control}"
-    padding: "8px 16px"
-  menu-row:
-    textColor: "{colors.bone-text}"
-    height: "50px"
-    padding: "0 22px"
+    textColor: "{colors.ink-muted}"
+  legend-row:
+    textColor: "{colors.ink}"
+    height: "44px to 46px"
+    focus: "a grease-red loop drawn round the row"
   keycap:
-    textColor: "{colors.bone-text}"
+    textColor: "{colors.ink}"
     typography: "{typography.key}"
-    rounded: "{rounded.key}"
-    padding: "3px 6px"
+    border: "1.5px solid {colors.ink}, 3px at the bottom"
   input:
-    backgroundColor: "{colors.night-page}"
-    textColor: "{colors.bone-text}"
-    rounded: "{rounded.control}"
-    padding: "8px 10px"
+    backgroundColor: "{colors.input-stock}"
+    border: "1.5px solid {colors.ink}"
   sheet:
-    backgroundColor: "{colors.field-panel}"
-    textColor: "{colors.bone-text}"
-    rounded: "{rounded.sheet}"
-    width: "min(880px, 100%)"
-  hud-panel:
-    backgroundColor: "{colors.hud-panel}"
-    textColor: "{colors.bone-text}"
-    rounded: "{rounded.panel}"
-    padding: "12px 14px"
+    backgroundColor: "{colors.map-stock}"
+    border: "1.5px ink, with a second hairline 4px inside: the neatline"
+    shadow: "7px 7px 0 rgba(20,18,12,.55)"
+    width: "min(880px, 100%), or 1180px wide"
+  hud-label:
+    backgroundColor: "{colors.map-stock}"
+    border: "1.5px solid {colors.ink}"
+    shadow: "4px 4px 0 rgba(20,18,12,.6)"
 ---
 
 # Design System: Airborne Puma
 
 ## Overview
 
-**Creative North Star: "The 1987 View, Today's Finish"**
+**Creative North Star: "The Map You Carried In"**
 
 Airborne Puma is the overhead, north-facing, tilted battlefield of *Airborne Ranger*, redrawn as hi-bit pixel art and lit by a low south-west sun. The field is the whole screen. Everything with height shows its roof and its south face, and every grounded thing throws a long blue-violet shadow to the north-east. Dust haze, a warm wash from the lower left and a soft vignette sit over the pixels as light, not as an effect. People stand upright in front, back and side poses inside a dark outline. The puma reads tawny and the wolves read grey, so the cast is clear at a glance.
 
-The chrome is the opposite material: flat, dark, translucent panels with hairline edges, set at the corners of the field so the ranger and the ground stay clear. Words use a condensed workhorse sans. Numbers and keys use a pixel face, which is how the panels join the pixel field without mimicking it. The menus are the same calm panels laid over a dimmed field or the title battlefield. No page anywhere is a separate "app".
+The chrome is the map a ranger would carry: a sheet of buff map stock with a blue kilometre grid and brown contour lines, a double neatline, margin data, and ink words in a condensed sans. Marks that matter are made in grease pencil, the china marker used on map acetate: a red loop round the chosen row, the goal, the notes on the flight plan. Sheets are opaque and lift off the field by a hard ink offset, never by a blur or a glow. Numbers and keys stay in a pixel face, which is how the paper joins the pixel field without mimicking it. The look was chosen to step away from the dark translucent glass the other greykit games share.
 
-The world rejects two things by name: an emulated C64 screen (the retired 16-colour palette, CRT framing) and a flat top-down token board. Per PRODUCT.md it must also never look like a mobile game. That rules out glossy or bevelled buttons, cartoon gloss and free-to-play energy.
+The world rejects two things by name: an emulated C64 screen (the retired 16-colour palette, CRT framing) and a flat top-down token board. Per PRODUCT.md it must also never look like a mobile game. That rules out glossy or bevelled buttons, cartoon gloss and free-to-play energy, and it is why the grease pencil stays rare.
 
 **Key Characteristics:**
 - A 480x300 pixel canvas with 24px tiles, scaled up by whole numbers only.
 - A low south-west sun: shadows lean north-east and are multiplied over the ground in a single pass, in each zone's own shade colour.
 - Three zones (desert, temperate, arctic) painted by the same painters from separate seven-step ground ramps.
-- Dark translucent panels, hairline borders, off-white words.
-- Three signal colours (green, amber, red-orange) that mean ready, suspicion and danger. They are never used as decoration.
-- Two voices: a condensed sans for words and a pixel face for numbers and keys.
+- Opaque paper chrome: map stock, grid, contours, neatline, ink; square corners; hard offset shadows.
+- Grease-pencil red for the chosen thing and the few notes that matter.
+- Green, amber and red mean ready, suspicion and danger. They are never decoration.
+- Three voices: a condensed sans for words, a pixel face for numbers and keys, a marker hand for grease pencil only.
 
 ## Colors
 
-The world has two palettes. The field is warm, sunlit and ramp-built. The chrome is near-black and bone-white, with three signal colours on top.
+The world has two palettes. The field is warm, sunlit and ramp-built. The chrome is printed paper and ink, with grease pencil and three signal colours on top. Every colour used as words on the stock meets WCAG AA.
 
-### Primary
-- **Signal Green** (signal-green): ready, chosen, the way forward. It fills the primary button, marks the selected tab underline, the focused menu row's wash and chevron, the "Quiet" alert state, the active weapon slot, destroyed-target pips and the green light for the jump. **Signal Green Lit** (signal-green-lit) is used for the focused primary button and for links.
+### The sheet
+- **Map Stock** (map-stock): every sheet, window, HUD label, the title sheet and the small-screen note. The CSS lays a contour pattern (contour-brown at 34%) and a 48px grid (grid-blue) over it.
+- **Map Inset** (map-inset): pod slots, the memorial card: things set into the sheet.
+- **Input Stock** (input-stock): text fields and HUD keycaps, a shade lighter than the sheet.
+- **Ink** (ink, 12.9:1): every word, every border, the neatline, a filled (chosen) control.
+- **Ink Muted** (ink-muted, 6.0:1) and **Ink Faint** (ink-faint, 4.7:1): secondary words, metadata, margin data, placeholders.
+- **Hairline / Edge Line**: dividers inside a sheet; the 1.5px rule under a heading is full ink.
+- **Night Page** (night-page): behind everything; the dim over the field when a sheet is up is this at 62%.
 
-### Secondary
-- **Suspicion Amber** (suspicion-amber): someone has noticed. It marks the "Suspicious" alert state, high fatigue, suspicion vision cones (drawn in the canvas as rgb 240,150,30), honours panels and the time-bomb pod swatch.
+### Marks
+- **Grease Red** (grease-red, 5.1:1): the hand-drawn loop round the focused legend row, the focus ring on cards and pod slots, the underline under PUMA, the flight plan's objective loop and pickup cross, the goal written under the enlargement, link underlines, and the offset under a focused primary button. It is drawn, never a fill, so it cannot be mistaken for danger.
+- **Puma Tawny** (puma-tawny): "PUMA" in the title mark only; in the field the puma fur ramp in the art kit.
 
-### Tertiary
-- **Danger Red-Orange** (danger-red-orange): seen, hurt, out of time. It marks the full-alert state and its panel edge, wounds, the low clock, winded fatigue, enemy targets on the minimap, the "seen" cones and danger-button fills. When danger is set as words on a panel, use **Danger Text** (danger-text) for contrast.
-- **Puma Tawny** (puma-tawny): the ranger's own colour. In chrome it appears only on "PUMA" in the title mark. In the field it is the puma fur ramp in the art kit.
+### Signals
+- **Ready Green** (ready-green, 4.9:1): the "Quiet" alert state, a met goal, destroyed-target pips, the green light.
+- **Suspicion Amber** (suspicion-amber, 5.1:1): "Suspicious", high fatigue, honours.
+- **Danger Red** (danger-red): "Full alert" and its label's edge, wounds, the low clock, winded fatigue, danger buttons, red toasts (filled, stock-coloured words).
 
-### Neutral
-- **Night Page** (night-page): the page behind everything, input fields, the memorial card.
-- **Field Panel** (field-panel): sheets, the pause window and the title menu at 94% opacity.
-- **HUD Panel** (hud-panel): HUD panels at 86% opacity, so the field shows through a little more during play. The direction contract named ~88%. The build settled on 86% for the HUD and 94% for sheets, and the art kit's `K.UI.panel` keeps 88% for canvas-drawn chrome.
-- **Panel Ink** (panel-ink): dark text set on green or red fills, and the backing of the full map.
-- **Control Rest / Control Lit** (control-rest, control-lit): a button at rest and a button under the cursor.
-- **Bone Text** (bone-text): every word, at 14.9:1 on a panel. Menu rows at rest use it at 86% alpha.
-- **Dust Muted** (dust-muted, 7.4:1) and **Dust Faint** (dust-faint, 5.2:1): secondary words, metadata and placeholders. HUD labels use bone text at 66% alpha.
-- **Hairline / Edge Line** (hairline, edge-line): dividers inside panels, and the outer edge of panels and controls.
-- **Sprite Outline** (sprite-outline): the one-pixel dark ring round people and small things, and the soft ellipse shadow under anything airborne.
-- **Zone Shades** (desert-shade, temperate-shade, arctic-shade): the colour each zone's shadow pass is multiplied in. They are cool and blue-violet, never black.
-
-The field's ground, dirt, scrub, rock, wall, roof, water, ice and trench ramps per zone, and the shared material ramps (olive, steel, concrete, wood, canvas, red, fire, smoke, puma, wolf), live in `js/kit.js` and `js/people.js`. They are listed in the sidecar. Ramps run from light to dark, and the art picks steps from them by light and noise. Do not mix free hexes into the field.
+In the field, canvas-drawn signals (vision cones, minimap marks, edge arrows) keep the brighter `K.UI` values in `js/kit.js`, because they sit on terrain, not on paper.
 
 ### Named Rules
-**The Three Signals Rule.** Green means ready or chosen, amber means suspicion, red-orange means danger. These three hues carry state and nothing else, and state never travels by colour alone: the alert pill says QUIET, SUSPICIOUS or ALERT and fills one, two or three meter segments.
+**The Three Signals Rule.** Green means ready, amber suspicion, red danger. They carry state and nothing else, and state never travels by colour alone: the alert says QUIET, SUSPICIOUS or FULL ALERT, stamped, and fills one, two or three meter segments.
 
-**The Cool Shade Rule.** Grounded shadows on the field are the zone's shade colour multiplied over the ground, never grey or black. Only airborne things (the Osprey, a parachute, a falling pod) cast a soft dark ellipse in sprite-outline at 28 to 40% alpha, because they are off the ground.
+**The One Marker Rule.** Grease pencil marks what the player should look at now: the focused row, the objective, the goal. One loop per screen; a note only where the paper would really carry one. Never as decoration.
+
+**The Cool Shade Rule.** Grounded shadows on the field are the zone's shade colour multiplied over the ground, never grey or black. Only airborne things (the Osprey, a parachute, a falling pod) cast a soft dark ellipse in sprite-outline at 28 to 40% alpha.
 
 ## Typography
 
-**Display Font:** Barlow Semi Condensed 500/600/700, self-hosted (falling back to Bahnschrift SemiCondensed, Arial Narrow and system-ui)
-**Body Font:** Barlow Semi Condensed
-**Label/Mono Font:** Pixelify Sans, self-hosted (falling back to ui-monospace), for numerals and keycaps only
-
-**Character:** A condensed military workhorse sans keeps words tight and readable over the field. The pixel face sets the clock, round counts, scores and keys, so the numbers you act on share the field's grain.
+**Word Font:** Archivo (variable, width 62 to 125%), self-hosted, set condensed: body at 88% width, headings at 66 to 72%, labels at 80%.
+**Number Font:** Pixelify Sans, self-hosted, for numerals and keycaps only.
+**Marker Font:** Kalam 400, self-hosted, for grease-pencil notes only.
 
 ### Hierarchy
-- **Display** (display): the title mark only, "AIRBORNE / PUMA", in uppercase with a soft text shadow over the battlefield.
-- **Headline** (headline): sheet titles. The pause window raises this to 40px, and the end-of-mission banner uses 36px.
-- **Title** (title): a mission's name. Debrief raises it to 38px, coloured by outcome (green retrieved, amber, danger text, muted).
-- **Body** (body): sheet prose, capped at 70ch. Menu rows use 19 to 20px at weight 500. The HUD runs at 15px with a 1.2 line height.
-- **Label** (label): uppercase field labels beside data (WOUNDS, FATIGUE, LOADOUT, OBJECTIVE, POD 1) and section headings inside sheets, in muted colour.
-- **Numeral** (numeral): the HUD clock at 34px, rounds at 40px, merit-table figures, pip counts.
-- **Key** (key): every keycap, at 12 to 13px.
+- **Display**: the title mark, "AIRBORNE / PUMA", 800 weight at 66% width, PUMA underlined in grease pencil.
+- **Headline**: sheet titles (30px). The pause window raises this to 44px.
+- **Title**: a mission's name (26px); the flight plan's at 34px; the debrief's outcome at 44px in its signal colour.
+- **Body**: sheet prose, capped at 70ch.
+- **Label**: uppercase map-margin labels and section headings, the headings ruled underneath in ink.
+- **Grease**: the notes on the flight plan, the goal under the enlargement, "start here" on the first mission card.
+- **Numeral / Key**: the clock, round counts, merit figures; every keycap.
 
 ### Named Rules
-**The Two Voices Rule.** Words are Barlow Semi Condensed and numbers you act on and keys you press are Pixelify Sans. Never set prose in the pixel face, and never set the clock in the sans.
+**The Three Voices Rule.** Words in Archivo; numbers you act on and keys you press in Pixelify Sans; grease pencil in Kalam. Never set prose in either of the other two.
 
 ## Layout
 
-The play field fills the window: a 480x300 canvas scaled up by whole numbers and letterboxed on black. Four light layers sit over it (sun, cool shade, haze, vignette), and the HUD sits above them as DOM. HUD panels hold the corners at a 16px inset. The status panel (268px) is top left, the alert pill is top centre, the minimap and objective (236px) are top right, the loadout (330px) is bottom left, and the key-hint pill is bottom centre. Pause and sound sit bottom right at 36px. The pause window stands right of centre (min(440px, 100%)) over a field dimmed by a left-to-right gradient, so the ranger stays visible. Sheets centre over a 74% dim with a 3px blur at min(880px, 100%), or 1180px for wide sheets, padded 24px. The title sets the mark and menu panel (min(460px, 100%)) in a left column inset clamp(32px, 7vw, 120px), with the battlefield behind it shaded from the left. The spacing rhythm is 4/8/16/24/32, with 12, 14 and 22 inside dense panels. Desktop only: below 760x480 a note replaces the game. Mission orders collapse to one column below 1024px wide.
+The play field fills the window: a 480x300 canvas scaled up by whole numbers and letterboxed on black, with four light layers over it (sun, cool shade, haze, vignette) and the HUD above them as DOM. HUD labels hold the corners at a 16px inset: status top left (262px), the alert top centre, minimap and objective top right (236px), loadout bottom left (330px), the key hint bottom centre, pause and sound bottom right. The pause window stands right of centre (min(440px, 100%)) over a field dimmed from the right, so the ranger stays visible. Sheets centre over a 62% dim, no blur, at min(880px, 100%) or 1180px wide, the body padded 20px 42px. The title is one sheet (min(440px, 100%)) in a left column inset clamp(24px, 6vw, 110px), over the battlefield. Desktop only: below 760x480 a note replaces the game.
+
+### The flight plan
+The orders screen is the whole mission strip from the generator, turned a quarter to the left so it reads along the Osprey's track as a strip chart does: north and the objective at the left, the drop zone at the right. It is drawn at a whole number of pixels a tile (3 to 6) to fit the sheet. Over it, in grease pencil: a loop round the objective with its target count, a cross on the pickup, the dashed track with its arrow, a dashed box round the drop zone, and a red hatch on every tile `AP.podSafe` says loses a pod. A scale bar, the hatch's key and "turned to the track" sit under it; then three columns: the situation, an enlargement of the objective with the goal written under it, and the pods to pack. The clock and "Board the Osprey" sit at the head, always in view. Below 1100px the situation spans both remaining columns.
 
 ### Named Rules
-**The Clear Field Rule.** Chrome holds the edges and corners. Nothing opaque covers the ranger's surroundings during play, and windows over the field stand off-centre or over a dim, never over a blank page.
+**The Clear Field Rule.** Chrome holds the edges and corners. Nothing covers the ranger's surroundings during play, and windows over the field stand off-centre or over a dim, never over a blank page.
 
 **The Whole Pixel Rule.** All field art is drawn on whole pixels at 480x300 and upscaled by integers with `image-rendering: pixelated`. Never scale by fractions, smooth, or mix resolutions.
 
 ## Elevation & Depth
 
-The field has real light: a low south-west sun, shadows leaning north-east at 1.05 px east and 0.42 px north per pixel of height, tapered, all gathered and multiplied in one pass. A warm soft-light glow sits at the lower left, a cool multiply at the upper right, a thin dust haze at the top and a violet-black vignette. The chrome is flat panels lifted by soft ambient shadows. They read as glass over the field, not as cards.
+The field has real light: a low south-west sun, shadows leaning north-east at 1.05 px east and 0.42 px north per pixel of height, tapered, all gathered and multiplied in one pass, plus the warm glow, cool corner, haze and vignette. The chrome has no light at all: paper lies flat, and lifts only by a hard, unblurred ink offset.
 
 ### Shadow Vocabulary
-- **Sheet lift** (`box-shadow: 0 24px 70px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.04)`): sheets and windows.
-- **Title menu lift** (`box-shadow: 0 18px 50px rgba(0,0,0,.45)`): the title menu panel.
-- **HUD lift** (`box-shadow: inset 0 1px 0 rgba(255,255,255,.035), 0 8px 22px rgba(0,0,0,.28)`): HUD panels.
-- **Focus ring** (`box-shadow: 0 0 0 1px #7fb069`; primary: `0 0 0 2px #0c0d11, 0 0 0 4px #e9e4d8`): the lit control.
+- **Sheet lift** (`7px 7px 0 rgba(20,18,12,.55)`): sheets, windows, the title sheet, the map view.
+- **Label lift** (`4px 4px 0 rgba(20,18,12,.6)`): HUD labels; at full alert the alert label's goes red-brown.
+- **Card lift** (`4px 4px 0 ink`): a focused mission or difficulty card.
+- **Neatline** (`inset 0 0 0 4px stock, inset 0 0 0 5px ink` inside a 1.5px ink border): every sheet's double rule.
 
 ### Named Rules
 **The Low Sun Rule.** Every standing object and person in the field casts its shadow north-east along the kit's lean (SX 1.05, SY -0.42), multiplied in the zone shade. Never use a CSS drop shadow or a south-falling shadow on field art.
 
+**The Flat Paper Rule.** No translucency, no backdrop blur, no glow, no gradient fill on chrome. A sheet is opaque stock; depth is a hard offset.
+
 ## Shapes
 
-Corners are small and consistent. Weapon slots, toggle squares and bar segments use a 2px pixel radius. Keycaps use 3px, with a heavier 2px bottom edge so they read as keys. Controls and inputs use 4px, HUD panels, mission cards, pods and recon images use 6px, and sheets, the title menu and the memorial card use 8px. Borders are always 1px hairlines. In the field, sprites carry a one-pixel dark outline, and sprite shapes are built from rows of pixels, not vector paths. Small indicators are drawn as pixel grids (`js/hud.js` icons, `js/insignia.js` ribbons and rank insignia) or as tiny inline SVG (back, close, pause, sound). There are no glyph-font icons.
+Every corner in the chrome is square. Borders are 1.5px ink, hairlines 1px. Keycaps carry a 3px bottom edge so they read as keys. In the field, sprites carry a one-pixel dark outline and are built from rows of pixels. Small indicators are pixel grids drawn in ink (`js/hud.js` icons), pixel art (`js/insignia.js` ribbons and rank insignia), or tiny inline SVG (back, close, pause, sound, the declination diagram). Grease-pencil marks are SVG strokes, the flight plan's roughened by a displacement filter. There are no glyph-font icons.
 
 ## Components
 
 ### Buttons
-Matte and quiet, lit only when focused.
-- **Shape:** gently squared (control radius).
-- **Default:** control-rest fill, edge-line border, bone text at weight 600. Focus switches to control-lit with a green border and a 1px green ring. The pointer moves focus, so hover and focus are the same state.
-- **Primary:** a signal-green fill with panel-ink text. Focus brightens it to green-lit with a double ring (page, then bone).
-- **Danger:** transparent, with a red-orange border at 70% and danger-text words. Focus fills it red-orange with panel-ink text.
-- **Quiet:** transparent and muted. Focus gives it the default button's face.
+Ink on paper, inked in when chosen.
+- **Default:** transparent, a 1.5px ink border, ink words at 600. Focus fills it with ink and turns the words to stock. The pointer moves focus, so hover and focus are the same state.
+- **Primary:** ink-filled at rest. Focus adds a hard grease-red offset under it.
+- **Danger:** a red border and red words; focus fills it red.
+- **Quiet:** borderless and muted; focus draws the ink border.
 - **Disabled:** 45% opacity.
 
 ### Toggle Pills
-- **Style:** transparent buttons led by a 10px square (pixel radius), outlined when off and filled green when on. The "on" pill gets a 12% green wash and a 65% green border.
+Transparent buttons led by an 11px square, outlined when off and filled with ink when on; the "on" pill takes a full ink border.
 
-### Menu Rows (title menu, pause window)
-The signature selection device. Rows run edge to edge at 46 to 50px with no border. A keycap sits on the left and muted metadata on the right. The focused row gets a green wash fading left to right (`linear-gradient(90deg, rgba(127,176,105,.26), rgba(127,176,105,.06) 75%, transparent)`), turns weight 600, and shows a solid green triangle: at the left edge on the title, at the right end in the pause window. Title rows arrive one at a time (0.32s, 45ms stagger, slide in 8px from the left), which is skipped under reduced motion.
+### Legend Rows (title menu, pause window)
+The signature selection device. The title's menu is the sheet's legend: a keycap, the item, a dotted leader, and what the item says about itself. The pause window's rows are the same without the leader. The focused row gets a grease-red loop drawn round it, and nothing else changes. Title rows arrive one at a time (0.32s, 45ms stagger, 8px from the left), skipped under reduced motion. The foot of the title sheet carries the declination diagram and the credit.
 
-### Keycaps
-- **Style:** pixel face, bone text, 6% bone fill, 28% bone border with a 2px bottom edge, key radius. In a focused menu row the keycap's border turns green.
+### Cards (missions, difficulty) and Pod Slots
+Paper cards with an ink border. A focused card takes a 3px grease-red ring and a hard ink offset. The last difficulty chosen is ink-filled. Pod slots are inset stock with the item's ink icon over its name; focus is the grease ring.
 
-### Sheets / Containers
-- **Corner Style:** sheet radius. **Background:** field-panel. **Border:** edge-line. **Shadow:** sheet lift.
-- **Structure:** a head (title, plus a quiet back or close with an inline SVG chevron or cross), optional tabs (muted, a 2px green underline when selected, 22px apart), and a scrolling body padded 22px 24px 26px. Pods and inset panels use 22% black and a hairline at panel radius.
+### Sheets
+Map stock with the neatline and sheet lift. A head (title, a quiet back or close), optional tabs (muted, a 3px grease underline when selected), and a scrolling body. Section headings are uppercase labels ruled underneath in ink.
 
-### HUD Panels
-- **Style:** hud-panel fill, an 8% bone border, panel radius, HUD lift. Inside: uppercase labels, pixel-face numerals, pixel-grid icons, segmented bars (12x10 segments, 3px gaps) and diamond target pips.
-- **Alert pill:** 40px high, centred. An eye icon, a label, the state word in its signal colour, and a three-segment meter. At full alert the panel border turns red-orange.
-- **Toasts:** small panels stacked in the lower centre, tinted by signal. Red toasts take a deep red fill.
+### HUD Labels
+Paper labels, 1.5px ink border, label lift. Inside: uppercase labels, pixel-face numerals, ink pixel icons, outlined bar segments filled with ink (amber, then red, as fatigue builds), outlined target diamonds filled green when done.
+- **Alert:** an eye, a label, the state word stamped in its signal colour inside a tilted border, and a three-segment meter. At full alert the label's border and offset go red.
+- **Toasts:** small labels stacked in the lower centre; red toasts are red-filled.
 
-### Inputs / Fields
-- **Style:** night-page fill, edge-line border, control radius. **Focus:** the border turns green and there is no glow. Placeholder text is dust-faint.
+### Inputs
+Input stock, a 1.5px ink border. Focus adds a 2px grease-red outline.
 
 ### Vision Cones (field)
-These appear only with the awareness aid on. Each is a radial wedge from an enemy that fades to clear, amber when it suspects and red-orange when it has seen, with dashed edges so it reads on pale ground. A "?" or "!" mark sits over the soldier.
+Only with the awareness aid on: a radial wedge from an enemy that fades to clear, amber when it suspects and red-orange when it has seen, with dashed edges. A "?" or "!" mark sits over the soldier.
 
 ## Do's and Don'ts
 
 ### Do:
 - **Do** draw field art on whole pixels at 480x300 with 24px tiles, and upscale only by whole numbers.
-- **Do** cast grounded shadows north-east along SX 1.05 / SY -0.42 and multiply them in the zone's shade colour in one pass.
-- **Do** build field colour from the zone and material ramps in `js/kit.js`, light to dark, and outline people and small things in sprite-outline.
-- **Do** keep chrome as flat dark translucent panels with 1px hairlines: HUD at 86%, sheets and menus at 94%.
-- **Do** reserve green, amber and red-orange for ready, suspicion and danger, and pair each with a word, count or shape.
-- **Do** set words in Barlow Semi Condensed and numbers and keys in Pixelify Sans.
-- **Do** light only the focused control: green fill or wash for the way forward, everything else matte.
+- **Do** cast grounded shadows north-east and multiply them in the zone's shade colour in one pass.
+- **Do** build field colour from the zone and material ramps in `js/kit.js`.
+- **Do** make chrome opaque map stock with ink borders, the neatline on sheets, and hard offset shadows.
+- **Do** mark the chosen thing with grease pencil (a loop, a ring) and fill chosen controls with ink.
+- **Do** keep green, amber and red for ready, suspicion and danger, each paired with a word, count or shape.
+- **Do** set words in Archivo, numbers and keys in Pixelify Sans, and grease pencil in Kalam.
 
 ### Don't:
-- **Don't** bring back the C64 look as the default. The 16-colour palette (`js/palette.js`) and the 16px tile art (`js/art.js`) are retired legacy, overridden by the kit, and the scanline overlay is only an opt-in player preference.
-- **Don't** flatten the view to straight top-down tokens: standing things show their roof and south face, and people stand upright.
-- **Don't** use glossy, bevelled or gradient-filled buttons, or cartoon gloss (PRODUCT.md: never a mobile game). The focused row's fading green wash is the only gradient in the chrome.
+- **Don't** bring back dark translucent glass, backdrop blur, glows or rounded panels.
+- **Don't** let grease pencil spread: no scribbles for decoration, no Kalam paragraphs.
+- **Don't** bring back the C64 look as the default. The 16-colour palette (`js/palette.js`) and the 16px tile art (`js/art.js`) are retired legacy, overridden by the kit; scanlines are only an opt-in preference.
+- **Don't** flatten the view to straight top-down tokens.
+- **Don't** use glossy, bevelled or gradient-filled buttons, or cartoon gloss (PRODUCT.md: never a mobile game).
 - **Don't** use black or grey drop shadows for anything standing on the ground.
-- **Don't** set prose in the pixel face or use a system display face for the title mark.
 - **Don't** use glyph or emoji icons. Draw icons as pixel grids or small inline SVG.
