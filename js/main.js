@@ -18,12 +18,24 @@
     AP.SFX.setMuted(!AP.SFX.muted);
     try { globalThis.localStorage.setItem("airbornepuma_muted_v1", AP.SFX.muted ? "1" : "0"); } catch (e) { /* no storage */ }
     syncSound();
-    if (!AP.SFX.muted) { AP.SFX.play("menu"); if (game.mode === "title" && !SMALL.matches) AP.SFX.startTune(); }
+    if (!AP.SFX.muted) { AP.SFX.play("menu"); titleTune(); }
     if (game.mode === "play") AP.HUD.toast(AP.SFX.muted ? "Sound off" : "Sound on", 15, 1200);
   };
   function syncSound() { const b = $("snd"); if (b) { b.setAttribute("aria-pressed", String(!AP.SFX.muted)); b.classList.toggle("muted", AP.SFX.muted); } }
   /* a phone or a small window: the page says so and stays quiet */
   const SMALL = matchMedia("(max-width: 759px), (max-height: 479px)");
+  /* the title tune runs from the boot's first line, its drum intro under the logo, so the title comes in
+     on the tune itself. The browser holds a page's sound until its first key or click: the tune waits at
+     its first bar until then, and wake() lets it go. A press during the boot skips it, and one after it
+     comes too late for the logo: either way the intro is dropped and the tune starts at its first note */
+  let booting = false;
+  const titleTune = () => { if ((game.mode === "boot" || game.mode === "title") && !AP.SFX.tune && !SMALL.matches) AP.SFX.startTune(booting); };
+  const wake = () => {
+    const late = AP.SFX.tune && AP.SFX.tune.intro && (booting || AP.SFX.ctx.state === "suspended");
+    AP.SFX.unlock();
+    if (late) { booting = false; AP.SFX.stopTune(true); }
+    titleTune();
+  };
 
   game.applySpeed = () => { game.step = 1000 / (AP.SPEEDS[AP.prefs.speed] || AP.SPEEDS.classic)[1]; };
   game.applyLook = () => { $("stage").classList.toggle("scan", !!AP.prefs.scanlines); };
@@ -307,9 +319,9 @@
   }
 
   /* ---- keys ---- */
+  /* on the window, ahead of the boot, which keeps the key that skips it from the document */
+  addEventListener("keydown", wake, true);
   document.addEventListener("keydown", ev => {
-    AP.SFX.unlock();
-    if (game.mode === "title" && !AP.SFX.tune && !SMALL.matches) AP.SFX.startTune();
     if (ev.ctrlKey || ev.metaKey || ev.altKey) return;
     if (UI.sheet) { UI.key(ev); return; }
     const k = ev.key.length === 1 ? ev.key.toLowerCase() : ev.key;
@@ -336,7 +348,7 @@
   addEventListener("blur", () => { AP.Input.clear(); if (game.mode === "play") game.pause(); });
   document.addEventListener("visibilitychange", () => { if (document.hidden) { checkpoint(); if (game.mode === "play") game.pause(); } });
   addEventListener("pagehide", checkpoint);
-  document.addEventListener("pointerdown", () => { AP.SFX.unlock(); if (game.mode === "title" && !AP.SFX.tune && !SMALL.matches) AP.SFX.startTune(); }, true);
+  document.addEventListener("pointerdown", wake, true);
 
   /* the mouse, for Mouse aim */
   function mouseAt(ev) { const r = $("screen").getBoundingClientRect(); AP.Input.mouse.x = (ev.clientX - r.left) / r.width * AP.K.VW; AP.Input.mouse.y = (ev.clientY - r.top) / r.height * AP.K.VH; }
@@ -391,10 +403,14 @@
       /* &pause=1 opens on the pause menu */
       if (q.has("pause")) game.pause();
     } else {
+      /* the tune from here; the ?play debug runs stay silent */
+      booting = !SMALL.matches && !reduced();
+      wake();
       const run = SMALL.matches ? { finish: async () => {}, cancel() {} } : runBoot({ lines: [bootReloadLine(), "terrain: ok", "osprey on station"] });
       openTitle();
       const saved = AP.loadMission(), n = AP.Roster.list().length;
       run.finish([saved ? "a mission in progress" : n ? `${n} ranger${n === 1 ? "" : "s"} on the roster` : "roster: empty"]).then(() => {
+        booting = false;
         revealTitle();
         /* debug, for screenshots: ?sheet=roster opens the veteran roster */
         if (q.get("sheet") === "roster") UI.roster();
