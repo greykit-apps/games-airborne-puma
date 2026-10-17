@@ -52,9 +52,10 @@ typography:
     letterSpacing: "0.14em"
   numeral:
     fontFamily: "Pixelify Sans, ui-monospace, monospace"
-    fontSize: "34px"
+    fontSize: "calc(var(--fp) * 10.886)"
     fontWeight: 400
     lineHeight: 1
+    letterSpacing: "-0.035em"
   key:
     fontFamily: "Pixelify Sans, ui-monospace, monospace"
     fontSize: "13px"
@@ -194,15 +195,15 @@ The field's ground, dirt, scrub, rock, wall, roof, water, ice and trench ramps p
 - **Title** (title): a mission's name. Debrief raises it to 38px, coloured by outcome (green retrieved, amber, danger text, muted).
 - **Body** (body): sheet prose, capped at 70ch. Menu rows use 19 to 20px at weight 500. The HUD runs at 15px with a 1.2 line height.
 - **Label** (label): uppercase field labels beside data (WOUNDS, FATIGUE, LOADOUT, OBJECTIVE, POD 1) and section headings inside sheets, in muted colour.
-- **Numeral** (numeral): the HUD clock at 34px, rounds at 40px, merit-table figures, pip counts.
-- **Key** (key): every keycap, at 12 to 13px.
+- **Numeral** (numeral): the HUD clock, rounds and counts, merit-table figures, pip counts. In the HUD one font pixel is one field pixel: Pixelify Sans draws on a grid of about 91.9 units in 1000, so the size is 10.886 field pixels, and -0.035em tracking puts each digit on a whole six pixels. Every HUD numeral is that one size, and it follows the window.
+- **Key** (key): every keycap, at 13px in menus and sheets. HUD keycaps take the HUD numeral size, nine field pixels tall.
 
 ### Named Rules
 **The Two Voices Rule.** Words are Barlow Semi Condensed and numbers you act on and keys you press are Pixelify Sans. Never set prose in the pixel face, and never set the clock in the sans.
 
 ## Layout
 
-The play field fills the window: a 480x300 canvas scaled up by whole numbers and letterboxed on black. Four light layers sit over it (sun, cool shade, haze, vignette), and the HUD sits above them as DOM. HUD panels hold the corners at a 16px inset. The status panel (268px) is top left, the alert pill is top centre, the minimap and objective (236px) are top right, the loadout (330px) is bottom left, and the key-hint pill is bottom centre. Pause and sound sit bottom right at 36px. The pause window stands right of centre (min(440px, 100%)) over a field dimmed by a left-to-right gradient, so the ranger stays visible. Sheets centre over a 74% dim with a 3px blur at min(880px, 100%), or 1180px for wide sheets, padded 24px. The title sets the mark and menu panel (min(460px, 100%)) in a left column inset clamp(32px, 7vw, 120px), with the battlefield behind it shaded from the left. The spacing rhythm is 4/8/16/24/32, with 12, 14 and 22 inside dense panels. Desktop only: below 760x480 a note replaces the game. Mission orders collapse to one column below 1024px wide.
+The play field fills the window: a 480x300 canvas scaled up by whole numbers and letterboxed on black. Four light layers sit over it (sun, cool shade, haze, vignette), and the HUD sits above them as DOM. HUD panels hold the corners at a 16px inset. The status panel (at least 268px, wider when its field-sized contents need it) is top left, the alert pill is top centre, the minimap and objective (236px) are top right, the loadout (at least 330px, widening to fit its ammo row) is bottom left, and the key-hint pill is bottom centre. Pause and sound sit bottom right at 36px. The pause window stands right of centre (min(440px, 100%)) over a field dimmed by a left-to-right gradient, so the ranger stays visible. Sheets centre over a 74% dim with a 3px blur at min(880px, 100%), or 1180px for wide sheets, padded 24px. The title sets the mark and menu panel (min(460px, 100%)) in a left column inset clamp(32px, 7vw, 120px), with the battlefield behind it shaded from the left. The spacing rhythm is 4/8/16/24/32, with 12, 14 and 22 inside dense panels. Desktop only: below 760x480 a note replaces the game. Mission orders collapse to one column below 1024px wide.
 
 ### Named Rules
 **The Clear Field Rule.** Chrome holds the edges and corners. Nothing opaque covers the ranger's surroundings during play, and windows over the field stand off-centre or over a dim, never over a blank page.
@@ -224,7 +225,7 @@ The field has real light: a low south-west sun, shadows leaning north-east at 1.
 
 ## Shapes
 
-Corners are small and consistent. Weapon slots, toggle squares and bar segments use a 2px pixel radius. Keycaps use 3px, with a heavier 2px bottom edge so they read as keys. Controls and inputs use 4px, HUD panels, mission cards, pods and recon images use 6px, and sheets, the title menu and the memorial card use 8px. Borders are always 1px hairlines. In the field, sprites carry a one-pixel dark outline, and sprite shapes are built from rows of pixels, not vector paths. Small indicators are drawn as pixel grids (`js/hud.js` icons, `js/insignia.js` ribbons and rank insignia) or as tiny inline SVG (back, close, pause, sound). There are no glyph-font icons.
+Corners are small and consistent. Weapon slots, toggle squares and bar segments use a 2px pixel radius. Keycaps use 3px, with a heavier 2px bottom edge so they read as keys. Controls and inputs use 4px, HUD panels, mission cards, pods and recon images use 6px, and sheets, the title menu and the memorial card use 8px. Borders are always 1px hairlines. In the field, sprites carry a one-pixel dark outline, and sprite shapes are built from rows of pixels, not vector paths. Small indicators are drawn as pixel grids (`js/hud.js` icons, one icon pixel to one field pixel via `--fp`, `js/insignia.js` ribbons and rank insignia) or as tiny inline SVG (back, close, pause, sound). There are no glyph-font icons.
 
 ## Components
 

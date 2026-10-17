@@ -365,6 +365,7 @@
     const s = si >= 2 && si / s0 > 0.86 ? si : s0;
     const st = $("stage"), w = Math.floor(VW * s), h = Math.floor(VH * s);
     st.style.width = w + "px"; st.style.height = h + "px";
+    st.style.setProperty("--fp", w / VW + "px");   /* one field pixel, which the HUD's pixel art and pixel face are sized in */
     st.style.left = Math.floor((innerWidth - w) / 2) + "px"; st.style.top = Math.floor((innerHeight - h) / 2) + "px";
   }
   addEventListener("resize", () => { fit(); sizeScene(); });
