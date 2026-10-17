@@ -1,110 +1,92 @@
 # Airborne Puma
 
-**Twelve missions behind enemy lines.** A remake of *Airborne Ranger* (MicroProse, 1987, Commodore 64): the ranger is a puma, the enemy are wolves, and it is drawn as modern pixel art in the original's tilted overhead view.
+**Twelve missions behind enemy lines.** A remake of *Airborne Ranger* (MicroProse, 1987, Commodore 64), redrawn as modern pixel art in the original's tilted overhead view. The ranger is a puma and the enemy are wolves.
 
-## Play
+The Osprey flies you over the mission area. You drop three supply pods where you'll want them, then jump on the green light. On the ground the clock is running. Sneak or fight your way to the objective, do the job, and get back to the pickup before time runs out. There are twelve missions across desert, temperate and arctic zones, and every map is laid out new each time. Veteran rangers keep their rank, decorations and service record between missions, and a campaign plays all twelve in order.
 
-[greykit.com/games/airbornepuma](https://greykit.com/games/airbornepuma/)
-
-No install required. Plain scripts, no build step, nothing fetched at play time: every picture is drawn and every sound synthesised in the page; the two typefaces ship with it.
+**Classic** plays as the 1987 game did. **Field**, the default, adds a minimap, arrows to the targets, enemy awareness markers and other modern aids, each of which can be switched on or off.
 
 ![The title: the depot from the air, the Osprey crossing with a ranger just out under his parafoil, and the menu](screenshots/title.png)
 
-## How it plays
-
-The Osprey brings you in over the north end of the mission area, past the objective, toward the drop zone at the south end; the whole strip scrolls by once. Kick out your three **supply pods** where you will want them (not into a ditch, onto rocks, wire or water), and jump on the green light. Steer the parafoil down.
-
-![Mission orders for the depot: the briefing, the goal, the zone's note and the recon picture of the compound](screenshots/orders.png)
-
 ![The fly-over: the arctic airfield at half scale, the Osprey over the fighters, three pods still to drop](screenshots/flyover.png)
 
-On the ground the **clock** is running. Walk, run (the fatigue bar) or crawl; trenches, scrub and walls hide you. Get to the objective, do what the orders say, then **recall the Osprey**: it comes back to the pickup point, lets down a ladder and waits a little while. Miss it when the clock has run out and you are captured. Three wounds and you are killed in action.
-
-The kit is the 1987 kit: a carbine and four magazines, three grenades, one LAW rocket, one time bomb, one first aid kit, the knife, and whatever is in the pods. The enemy patrols, investigates noises, chases what it sees, and on **full alert** -- a shot or an explosion anyone hears -- converges and calls in reinforcements. Machine-gun nests, bunkers, turrets, motion-sensing mini-bunkers, minitanks, minefields and wire are in the way.
-
-![On the ground at the depot: the puma ranger at the wire below the fuel dump, tents, a sandbagged nest, wolf soldiers with their fields of view, two of them suspicious, and the HUD panels](screenshots/ground.png)
-
-![The map, on Tab: the depot's strip with the three targets boxed, the pickup marked, and what the ranger is carrying](screenshots/map.png)
-
-The twelve missions, four to a zone:
-
-| Desert | Temperate | Arctic |
-|---|---|---|
-| 1 Destroy a Munitions Depot | 2 Steal a Code Book | 3 Disable Enemy Aircraft |
-| 4 Capture an Enemy Officer | 5 Cut a Pipeline | 6 Knock Out Enemy Radar Array |
-| 7 Disable a SAM Site | 8 Liberate a P.O.W. Camp | 9 Photograph a Secret Experimental Aircraft |
-| 10 Free the Hostages | 11 Create a Diversion | 12 Delayed Sabotage |
-
-![Mission selection: the desert's missions, each with a recon picture of its objective](screenshots/missions.png)
-
-The desert tires you faster; the snow muffles sound and hides thin ice. Every mission area is laid out new each time from modular pieces, as in 1987, and proved finishable before it is used.
+![On the ground at the depot: the puma ranger at the wire below the fuel dump, tents, a sandbagged nest, wolf soldiers with their fields of view, and the HUD](screenshots/ground.png)
 
 ![The arctic airfield: the ranger between a turret and a tent, two parked fighters, wolf soldiers in the snow](screenshots/arctic.png)
 
-![The P.O.W. camp in the temperate zone: the pyramid to blow, a tent, a sandbagged nest, and a wolf watching the wire](screenshots/temperate.png)
-
-## Rangers, ranks and the campaign
-
-A **practice ranger** is anyone, and nothing is kept. A **veteran** is enlisted by name and kept in this browser, as the C64 kept them on a Roster Diskette: their merit, their rank (PFC to Lieutenant Colonel), their decorations (two Army Commendation Medals, the Bronze and Silver Stars, the Distinguished Service Cross), and every mission they flew. Captured, they wait in the enemy's camp until another ranger frees them on mission 8; killed in action, they go to the memorial. The **campaign** is all twelve missions in a fixed order at one difficulty: only there can a ranger make Colonel, or win the Medal of Honor.
-
 ![The veteran roster: portraits, ranks, ribbons, the last mission each flew, and the memorial](screenshots/roster.png)
 
-## Classic and Field
+## Play it online
 
-**Classic** is the 1987 game: the indicators in the corner and nothing more, run and crawl as toggles, pods carried as weight, a mission played through. **Field**, the default, adds a minimap, arrows to the targets and the pickup, the mission's progress and the alarm state, `?` and `!` over soldiers who suspect or see you, fly-over guidance, Shift held to run, mouse aim, the carbine back in hand after a throw, pods that unpack, and leaving a mission to resume later. Settings has every aid on its own; `L` switches the set mid-mission. Settings also has scanlines, and the game speed (fifty steps a second, as the C64, or forty or sixty).
+[greykit.com/games/airbornepuma](https://greykit.com/games/airbornepuma/)
 
-## Keys
+## Play it on your own computer
+
+Airborne Puma is a web page. There is nothing to install and nothing to build, and once you have a copy it needs no internet connection: every picture is drawn and every sound synthesised in the page, and its two typefaces come with it.
+
+1. **Download it.** On GitLab, use **Code → Download source code → zip**, or clone it:
+
+   ```bash
+   git clone https://gitlab.com/greykit-app/games/airborne-puma.git
+   ```
+
+2. **Unzip it**, if you downloaded the zip.
+3. **Open `index.html`** in a desktop browser. Double-clicking it usually does it.
+
+### What you need
+
+- A **desktop or laptop** with a **keyboard**. A gamepad works too.
+- A recent Chrome, Edge, Firefox or Safari.
+- A browser window at least **760 × 480**. On a phone or a smaller window, the page shows a note instead of the game.
+- Sound is optional: `M` turns it on and off.
+
+The keys are listed in the game under **Help** (`?` on the title screen).
+
+### If it doesn't start
+
+Some browsers are strict about pages opened straight from disk. If you see a blank screen, or your rangers aren't remembered, serve the folder instead. From inside the game's folder:
+
+```bash
+python3 -m http.server 8000
+```
+
+Then open <http://localhost:8000>. Any static file server does the same job.
+
+## Put it on your own website
+
+The game is static files. Copy them to any web host that serves files, such as an ordinary web server, GitLab Pages, GitHub Pages or Netlify, and open the folder's address. It works at the site root or in any subfolder, because every path in it is relative.
+
+**Upload these:**
 
 | | |
 |---|---|
-| Arrows, WASD, numpad | move |
-| `Space` or `J` | fire; hold it and turn to swing the crosshair; `,` `.` fine aim |
-| `Shift` / `R` | run (held, or a toggle) |
-| `C` | crawl |
-| `1`–`6` or `F1` `F3` `F5` `F7` | carbine, grenade, LAW, knife, time bomb (again: next fuse), first aid |
-| `E` | use: open a pod, kick a lever, raid a shack |
-| `H` / `Delete` | first aid |
-| `Q` / `` ` `` | recall the Osprey |
-| `Tab` | the map |
-| `Esc` / `P` | pause |
-| `L` | Classic or Field aids |
-| `M` | sound |
+| `index.html` | the page |
+| `css/`, `js/`, `fonts/` | the game, its styles and its two typefaces (keep the font licence files with them) |
+| `manifest.webmanifest`, `icon.svg`, `favicon.ico`, `favicon-16x16.png`, `favicon-32x32.png`, `apple-touch-icon.png` | the icons, and the manifest that lets a browser install it as an app |
+| `og.png` | the picture shown when the link is shared |
+| `LICENSE` | the MIT licence, which asks that it travel with copies |
 
-A gamepad works. It is a desktop game: on a phone or a small window the page says so instead.
+**Leave out** `screenshots/`, `tools/`, the Markdown files, and anything starting with a dot (`.git`, `.gitlab-ci.yml` and so on). The game never loads them.
 
-## What's in here
+**Two things to change for your own address:**
 
-| | |
-|---|---|
-| `index.html` | the page: the 480×300 play screen, the title, the note for small screens |
-| `css/gk-tokens.css` | the Tactical palette, byte for byte from games-meta `canon/` (STANDARD.md §4) |
-| `css/airbornepuma.css` | the page, the HUD, and the screens with words on them: flat dark panels over the field |
-| `fonts/` | Barlow Semi Condensed and Pixelify Sans (SIL Open Font License; the licences are beside them) |
-| `js/gk-title.js` | the greykit.games boot, byte for byte from games-meta `canon/` (§3); the title after it is the game's own, in `js/main.js` |
-| `js/engine/*.js`, `js/util.js`, `js/tiles.js`, `js/missions.js` | the game itself, with no DOM in it: map generation, the ranger, weapons, the enemy, the alert, the twelve missions, the airdrop, extraction, merit |
-| `js/engine/bot.js` | a ranger with no imagination, for the tests (not loaded by the page) |
-| `js/kit.js` | what the play screen's art shares: 480×300, 24-pixel tiles, the low sun and its shadows, the zones' colour ramps |
-| `js/ground.js`, `js/things.js`, `js/people.js` | the ground and what stands on it; installations, the Osprey, pods and effects; the puma and the wolves |
-| `js/palette.js`, `js/art.js` | the old sixteen-colour art still used for portraits, rank insignia and ribbons |
-| `js/render.js`, `js/hud.js` | the play screen (and the title's picture), and the panels over it |
-| `js/sfx.js` | Web Audio: the effects, the loops, the title march |
-| `js/input.js`, `js/career.js`, `js/screens.js`, `js/main.js` | controls, the roster and settings, the sheets, and the loop |
-| `tools/sim-check.js` | headless: the rules, the bot winning every mission, a replay matching tick for tick |
-| `tools/mapcheck.js` | headless: every mission's map at every difficulty over many seeds, provably finishable (`--show mission:seed:diff` prints one) |
-| `tools/stamp-assets.js` | stamps each script and stylesheet URL with its content hash; CI fails on a stale one, so run it before committing |
-| `tools/check-assets.js` | every file the page names exists (games-meta STANDARD.md §10) |
-| `tools/make-icons.js`, `tools/og.html` | `icon.svg`, the favicons and the home-screen icon (also the GitLab avatar) from one 40×40 drawing of the ranger under his parafoil; the share card, `og.png`, drawn in the play screen's own art |
-| `screenshots/` | the pictures in this file, at twice the play screen's size |
+- **Link previews.** The `og:image`, `og:url` and `twitter:image` tags near the top of `index.html` point at greykit.com. Change them to your own address, or a shared link will show greykit.com's card.
+- **Caching.** Every script and stylesheet URL in `index.html` ends in `?v=` and a hash of the file. So a host or CDN can cache `css/` and `js/` for as long as it likes, as long as `index.html` itself isn't cached for long.
 
-`?play=<mission>&diff=<0-3>&seed=<n>&land=1` on the page drops straight into a practice mission, for testing.
+## Your saves
 
-## Saves
+- Veteran rangers, the memorial, a mission in progress, your settings and the sound setting are kept **in your browser**, not in the game's folder.
+- Another browser, the online version, or a different address (a different `localhost` port, say) each keep their own separate saves.
+- Everything is stored under keys beginning `airbornepuma_`, so it won't collide with other pages on the same site.
+- **Settings → Forget everything** erases all of it. It asks first.
 
-Everything is in `localStorage` under keys starting `airbornepuma_`: the roster, a mission in progress, settings, sound. Settings → *Forget everything* clears exactly those.
+## Credits
 
-## Not included
+*Airborne Ranger* was designed by Lawrence Schick and programmed by Scott Spanburg, with graphics by Iris Leigh Idokogi and music by Ken Lagace, for MicroProse in 1987. Airborne Puma is not affiliated with MicroProse, and none of the original's code, art, sound or text is used. Everything here is drawn and synthesised in the page, the title march included. The briefings, the maps and the numbers are new, guessed where the 1987 manual is silent.
 
-The original *Airborne Ranger* disks may sit beside this repo for reference. They are MicroProse's, they are gitignored, and nothing of theirs -- code, art, sound or text -- is in this game. The briefings, maps, numbers and the march are ours, guessed where the 1987 manual is silent.
+Typefaces: [Barlow Semi Condensed](https://fonts.google.com/specimen/Barlow+Semi+Condensed) and [Pixelify Sans](https://fonts.google.com/specimen/Pixelify+Sans), under the SIL Open Font License.
+
+Built by [greykit.com](https://greykit.com/).
 
 ## License
 
