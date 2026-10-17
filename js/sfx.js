@@ -127,12 +127,14 @@
     D3:2 A2:2 D3:2 A2:2 | Bb2:2 F3:2 Bb2:2 F3:2 | C3:2 G2:2 A2:2 E3:2 | D3:2 A2:2 D3:4 |
     F2:2 C3:2 F2:2 C3:2 | G2:2 D3:2 G2:2 D3:2 | F2:2 C3:2 F2:2 C3:2 | D3:2 A2:2 D3:2 A2:2 |
     Bb2:2 F3:2 Bb2:2 F3:2 | A2:2 E3:2 A2:2 E3:2 | Bb2:2 G2:2 A2:2 A2:2 | D3:2 A2:2 D3:4`);
-  A.startTune = () => {
+  /* intro: two bars of drums first, under the boot's logo, so the tune itself comes in with the title */
+  const INTRO = 16;
+  A.startTune = (intro = false) => {
     if (A.muted || !A.ctx || A.tune) return;
     const a = A.ctx, g = a.createGain(), eighth = 0.19;
     g.gain.value = 0.55; g.connect(A.dry);
     const total = LEAD.reduce((s, n) => s + n[1], 0);
-    const st = { g, t0: a.currentTime + 0.1, next: 0, timer: null };
+    const st = { g, t0: a.currentTime + 0.1 + (intro ? INTRO * eighth : 0), next: 0, timer: null, intro };
     const note = (f, at, dur, type, vol) => {
       if (!f) return;
       const o = a.createOscillator(), e = a.createGain();
@@ -140,12 +142,24 @@
       e.gain.setValueAtTime(0, at); e.gain.linearRampToValueAtTime(vol, at + 0.01); e.gain.setValueAtTime(vol, at + dur * 0.7); e.gain.linearRampToValueAtTime(0, at + dur * 0.95);
       o.connect(e); e.connect(g); o.start(at); o.stop(at + dur);
     };
-    const drum = (at, snare) => {
+    const drum = (at, snare, vol = 1) => {
       const s = a.createBufferSource(), f = a.createBiquadFilter(), e = a.createGain();
       s.buffer = noiseBuf; f.type = snare ? "highpass" : "lowpass"; f.frequency.value = snare ? 1800 : 160;
-      e.gain.setValueAtTime(snare ? 0.18 : 0.5, at); e.gain.exponentialRampToValueAtTime(0.001, at + (snare ? 0.12 : 0.18));
-      s.connect(f); f.connect(e); e.connect(g); s.start(at); s.stop(at + 0.2);
+      e.gain.setValueAtTime((snare ? 0.18 : 0.5) * vol, at); e.gain.exponentialRampToValueAtTime(0.001, at + (snare ? 0.12 : 0.18));
+      s.connect(f); f.connect(e); e.connect(g); s.start(at, Math.random()); s.stop(at + 0.2);
     };
+    /* the count-in: a bar of the march's beat, a bar of roll swelling into a crash on the tune's first note */
+    if (intro) {
+      const b = st.t0 - INTRO * eighth;
+      for (let i = 0; i < 8; i++) { if (i % 2 === 0) drum(b + i * eighth, false, i % 4 ? 0.6 : 1); if (i % 4 === 2) drum(b + i * eighth, true); }
+      for (const i of [3.5, 7, 7.5]) drum(b + i * eighth, true, 0.7);
+      drum(b + 8 * eighth, false); drum(b + 12 * eighth, false);
+      for (let i = 0; i < 16; i++) drum(b + (8 + i / 2) * eighth, true, 0.3 + i * 0.07);
+      const s = a.createBufferSource(), f = a.createBiquadFilter(), e = a.createGain(), at = st.t0;
+      s.buffer = noiseBuf; f.type = "highpass"; f.frequency.value = 5000;
+      e.gain.setValueAtTime(0.16, at); e.gain.exponentialRampToValueAtTime(0.001, at + 1.2);
+      s.connect(f); f.connect(e); e.connect(g); s.start(at, Math.random() * 0.25); s.stop(at + 1.25);
+    }
     /* schedule a loop's worth at a time, a little ahead */
     const sched = () => {
       while (st.t0 + st.next * total * eighth < a.currentTime + 1.5) {
@@ -162,12 +176,13 @@
     st.timer = setInterval(sched, 400);
     A.tune = st;
   };
-  A.stopTune = () => {
+  /* now: cut it dead rather than fade it */
+  A.stopTune = (now = false) => {
     if (!A.tune) return;
     clearInterval(A.tune.timer);
     const g = A.tune.g, a = A.ctx;
-    g.gain.setTargetAtTime(0, a.currentTime, 0.15);
-    setTimeout(() => g.disconnect(), 1500);
+    if (now) g.disconnect();
+    else { g.gain.setTargetAtTime(0, a.currentTime, 0.15); setTimeout(() => g.disconnect(), 1500); }
     A.tune = null;
   };
 })();
