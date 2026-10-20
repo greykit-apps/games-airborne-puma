@@ -399,7 +399,9 @@
         <p class="note">Faint lines across the field, as an old television drew it.</p>
         <h3>Sound</h3>
         <div class="row">${pill(!AP.SFX.muted, "On", "mute:0")}${pill(AP.SFX.muted, "Off", "mute:1")}</div>
-        <p class="note">Gunfire, footsteps, the Osprey, the alarms; the march on the title. <kbd>M</kbd> switches it anywhere.</p>
+        <p class="note">Gunfire, footsteps, the Osprey, the alarms; the theme on the title. <kbd>M</kbd> switches it anywhere.</p>
+        <div class="row">${pill(AP.SFX.musicOn, "Music on", "music:1")}${pill(!AP.SFX.musicOn, "Music off", "music:0")}</div>
+        <p class="note">The theme on the title. Off, the field still sounds.${AP.SFX.muted ? " Silent while Sound is off." : ""}</p>
         <h3>Game speed</h3>
         <div class="row">${Object.entries(AP.SPEEDS).map(([k, [n, hz]]) => pill(AP.prefs.speed === k, `${n} (${hz})`, "speed:" + k)).join("")}</div>
         <p class="note">Steps of the game each second; Classic is the C64's fifty. Every distance is in steps, so a slower clock changes nothing but time.</p>
@@ -418,6 +420,7 @@
         else if (k === "pal") { AP.prefs.palette = a; AP.savePrefs(); AP.buildArt(a); AP.Render.small = null; thumbs.clear(); }
         else if (k === "scan") { AP.prefs.scanlines = a === "1"; AP.savePrefs(); AP.game.applyLook(); }
         else if (k === "mute") { if ((a === "1") !== AP.SFX.muted) AP.game.toggleMute(); }
+        else if (k === "music") { if ((a === "1") !== AP.SFX.musicOn) AP.game.setMusic(a === "1"); }
         else if (k === "speed") { AP.prefs.speed = a; AP.savePrefs(); AP.game.applySpeed(); }
         void c;
         AP.game.syncAids();
