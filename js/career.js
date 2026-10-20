@@ -11,6 +11,7 @@
 (() => {
   const KEY_ROSTER = "airbornepuma_roster_v1", KEY_PREFS = "airbornepuma_prefs_v1", KEY_MISSION = "airbornepuma_mission_v1";
   AP.KEY_MUTED = "airbornepuma_muted_v1";
+  AP.KEY_MUSIC = "airbornepuma_music_v1";
 
   /* ---- the aids: Classic is 1987, Field is a modern helping hand ---- */
   AP.AID_LIST = [

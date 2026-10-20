@@ -133,33 +133,27 @@ input::placeholder { color: var(--ap-faint); }
 .ap-pop .col button:last-child { margin-top: 6px; font-size: 17px; color: var(--ap-muted); }
 .ap-pop .keys { margin: 0; padding: 12px 26px 14px; background: rgba(0,0,0,.18); border-top: 1px solid var(--ap-hair); font-size: 14px; line-height: 1.9; color: var(--ap-muted); max-width: none; }
 
-/* ---- the title: the battlefield behind, the name, the menu in a panel ---- */
-.ap-title { position: fixed; inset: 0; overflow: hidden; background: #2a241c; }
-.ap-scene { position: absolute; inset: 0; width: 100%; height: 100%; image-rendering: pixelated; image-rendering: crisp-edges; }
-.ap-shade { position: absolute; inset: 0; pointer-events: none;
-  background: linear-gradient(90deg, rgba(8,9,12,.86) 0%, rgba(8,9,12,.62) 32%, rgba(8,9,12,.1) 60%, rgba(8,9,12,0) 72%), radial-gradient(ellipse 80% 90% at 60% 45%, rgba(0,0,0,0) 55%, rgba(10,8,18,.5) 100%); }
-.ap-title main { position: relative; height: 100%; width: min(560px, 100%); display: flex; flex-direction: column; justify-content: center; padding: 32px 0 64px clamp(32px, 7vw, 120px); }
-.ap-mark { margin: 0; font: 700 clamp(56px, 6.4vw, 92px)/.9 var(--ui); text-transform: uppercase; letter-spacing: .005em; color: var(--ap-text); text-shadow: 0 4px 28px rgba(0,0,0,.45); }
-.ap-mark span { display: block; }
-.ap-mark .puma { color: var(--ap-tawny); }
-.ap-sub { margin: 16px 0 30px; font-size: 14px; font-weight: 600; letter-spacing: .32em; text-transform: uppercase; color: var(--ap-muted); }
-.ap-menu { display: flex; flex-direction: column; width: min(460px, 100%); padding: 8px 0; background: var(--ap-panel); border: 1px solid var(--ap-line); border-radius: 8px; box-shadow: 0 18px 50px rgba(0,0,0,.45); }
-.ap-menu button { position: relative; display: flex; align-items: center; gap: 14px; width: 100%; height: 50px; padding: 0 22px; border: 0; border-radius: 0; background: transparent; font-size: 20px; font-weight: 500; color: rgba(233,228,216,.86); }
-.ap-menu kbd { min-width: 26px; text-align: center; color: var(--ap-muted); }
-.ap-menu .lbl { white-space: nowrap; }
-.ap-menu .meta { margin: 0 0 0 auto; font-size: 15px; font-weight: 500; color: var(--ap-faint); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.ap-menu .dflt { color: var(--ap-text); font-weight: 600; }
-.ap-menu button:focus { color: #f2f6ec; font-weight: 600; background: linear-gradient(90deg, rgba(127,176,105,.26), rgba(127,176,105,.06) 75%, rgba(127,176,105,0)); box-shadow: none; }
-.ap-menu button:focus::before { content: ""; position: absolute; left: 7px; top: 50%; margin-top: -6px; border-left: 7px solid var(--ap-green); border-top: 6px solid transparent; border-bottom: 6px solid transparent; }
-.ap-menu button:focus kbd { color: var(--ap-text); border-color: var(--ap-green); }
-.ap-menu button:focus .meta { color: var(--ap-muted); }
-.ap-menu .util { display: flex; margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--ap-hair); }
-.ap-menu .util button { flex: 1; height: 44px; font-size: 16px; gap: 10px; padding: 0 18px; }
-.ap-foot { position: absolute; left: clamp(32px, 7vw, 120px); bottom: 24px; font-size: 14px; }
-/* the menu arriving, a line at a time */
-.ap-print .pr { animation: ap-pr .32s cubic-bezier(.2,.8,.2,1) calc(var(--i) * 45ms) both; }
-@keyframes ap-pr { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: none; } }
-@media (prefers-reduced-motion: reduce) { .ap-print .pr { animation: none; } }
+/* ---- the title: the canon default (@gk-title v0.4, this game's own title made the default) over the
+   battlefield, in the field's colours; and the integrated intro's switches and credit (gk-intro.js) ---- */
+#title { --gk-title-ink: var(--ap-text); --gk-title-hi: var(--ap-tawny); --gk-title-focus: var(--ap-green); --gk-title-dim: var(--ap-muted);
+  --gk-title-panel: var(--ap-panel); --gk-title-line: var(--ap-line); --gk-title-font: var(--ui); }
+#title .gk-title { --t-x: clamp(32px, 7vw, 120px); }
+#title .gk-title > .scene { background: #2a241c; }
+.ap-scene { image-rendering: pixelated; image-rendering: crisp-edges; }
+#title .gk-title > .gk-shade { background: linear-gradient(90deg, rgba(8,9,12,.86) 0%, rgba(8,9,12,.62) 32%, rgba(8,9,12,.1) 60%, rgba(8,9,12,0) 72%), radial-gradient(ellipse 80% 90% at 60% 45%, rgba(0,0,0,0) 55%, rgba(10,8,18,.5) 100%); }
+#title .gk-title h1 { font-size: clamp(56px, 6.4vw, 92px); }
+#title .gk-menu button { color: rgba(233,228,216,.86); }
+#title .gk-menu .gk-primary { color: var(--ap-text); }
+#title .gk-menu .gk-meta { font-weight: 500; color: var(--ap-faint); }
+/* the canon marks the focused row with its wash and pointer; the page's own focus ring for buttons stays off it */
+#title .gk-menu button:focus { color: #f2f6ec; box-shadow: none; }
+#title .gk-menu button:focus .gk-meta { color: var(--ap-muted); }
+/* the keys keep the page's pixel keycaps */
+#title .gk-menu kbd { font: 400 13px/1 var(--px); padding: 3px 6px; color: var(--ap-muted); border: 1px solid rgba(233,228,216,.28); border-bottom-width: 2px; background: rgba(233,228,216,.06); }
+#title .gk-menu button:focus kbd { color: var(--ap-text); border-color: var(--ap-green); }
+#title .gk-menu .gk-util { border-top-color: var(--ap-hair); }
+#title .gk-menu .gk-util button { padding: 0 18px; }
+#title .gki-tg:focus { background: var(--ap-panel); box-shadow: none; }
 
 /* ---- the personnel officer and the roster ---- */
 .practice { display: flex; gap: 16px; align-items: center; margin-bottom: 18px; }

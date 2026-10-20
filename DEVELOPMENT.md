@@ -18,7 +18,8 @@ What the game is meant to be is in [PRODUCT.md](PRODUCT.md), and how it looks in
 | `css/gk-tokens.css` | the Tactical palette, byte for byte from games-meta `canon/` (STANDARD.md §4) |
 | `css/airbornepuma.css` | the page, the HUD, and the screens with words on them: flat dark panels over the field |
 | `fonts/` | Barlow Semi Condensed and Pixelify Sans (SIL Open Font License; the licences are beside them) |
-| `js/gk-title.js` | the greykit.games boot, byte for byte from games-meta `canon/` (§3); the title after it is the game's own, in `js/main.js` |
+| `js/gk-title.js` | the greykit.games boot and default title, `@gk-title` v0.4 taken whole from games-meta `canon/` (§3); `js/main.js` gives it the menu and the battlefield behind it, and `css/airbornepuma.css` its colours |
+| `js/gk-intro.js` | the integrated intro, `@gk-intro` v0.2 taken whole from games-meta `canon/` (§14): the meow under the boot's logo, the hold for a press where the browser wants one, the title's entrance, the credit under the menu, the Sound and Music switches, the menu's ticks |
 | `js/engine/*.js`, `js/util.js`, `js/tiles.js`, `js/missions.js` | the game itself, with no DOM in it: map generation, the ranger, weapons, the enemy, the alert, the twelve missions, the airdrop, extraction, merit |
 | `js/engine/bot.js` | a ranger with no imagination, for the tests (not loaded by the page) |
 | `js/kit.js` | what the play screen's art shares: 480×300, 24-pixel tiles, the low sun and its shadows, the zones' colour ramps |
@@ -26,7 +27,8 @@ What the game is meant to be is in [PRODUCT.md](PRODUCT.md), and how it looks in
 | `js/insignia.js` | rank insignia, ribbons and the roster's portraits |
 | `js/palette.js`, `js/art.js` | the old sixteen-colour art, almost all of it now replaced by the files above; it still supplies the palette setting (`AP.buildArt`) and `AP.artURL` |
 | `js/render.js`, `js/hud.js` | the play screen (and the title's picture), and the panels over it |
-| `js/sfx.js` | Web Audio: the effects, the loops, the title march |
+| `js/sfx.js` | Web Audio: the effects, the loops, the title theme (on its own Music bus under the master Sound) |
+| `music/` | music written for the game and kept for later, not loaded by the page: `quickstep.js`, a march in B flat, goes back into `js/sfx.js` whole |
 | `js/input.js`, `js/career.js`, `js/screens.js`, `js/main.js` | controls, the roster and settings, the sheets, and the loop |
 | `tools/lib.js` | loads the engine headless, with no document, canvas or sound, for the two checks below |
 | `tools/sim-check.js` | the rules, the bot winning every mission, a replay matching tick for tick (`--seeds N`, `--quick`, `--only <mission>`) |
@@ -65,13 +67,15 @@ index.html?play=<mission>&diff=<0-3>&seed=<n>&land=1
 
 An unknown mission id falls back to the depot.
 
+Without `play`, `hold=always` makes the boot hold for a press even where the browser would play sound already (the in-app browser, a launch from the arcade). `sheet=roster` and `demo=roster|kia` keep the plain boot, with no hold and no entrance.
+
 ## Deploy
 
 Merge requests run the `validate` job only. On `main`, `deploy` follows it and rsyncs the repo to `greykit.com/games/airbornepuma/` on DreamHost, leaving out `.git`, `.claude`, `.gitlab-ci.yml` and `tools/`. The SSH host key is pinned in `.gitlab-ci.yml` rather than scanned. See the comments there before changing it.
 
 ## Saves
 
-Everything is in `localStorage` under keys beginning `airbornepuma_`, versioned with a `_v1` suffix: the roster, a mission in progress, settings, and sound. They are defined at the top of `js/career.js`. Settings → *Forget everything* clears exactly those keys, as games-meta STANDARD.md requires.
+Everything is in `localStorage` under keys beginning `airbornepuma_`, versioned with a `_v1` suffix: the roster, a mission in progress, settings, sound, and music. They are defined at the top of `js/career.js`. Settings → *Forget everything* clears exactly those keys, as games-meta STANDARD.md requires.
 
 ## Reference disks
 

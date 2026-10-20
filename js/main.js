@@ -1,41 +1,47 @@
 /* Airborne Puma -- boot, title, the loop, and everything between.
  *
- * The greykit.games boot (the canon @gk-title block, STANDARD.md §3), then
- * the game's own title: the battlefield, the name, the menu (§6's items and
- * keys, read by the block's own key lookup), the credit. Then a mission: the briefing, the fly-over, the ground,
- * the debrief. The engine runs at fifty steps a second
+ * The greykit.games integrated intro (games-meta STANDARD.md §14, the shared
+ * gk-intro.js over the canon @gk-title boot): the boot, a press to let the
+ * sound in where the browser wants one, then the block's default title over
+ * the battlefield: the name, the menu (§6's items and keys, read by the
+ * block's own key lookup), the credit under it, the Sound and Music switches.
+ * Then a mission: the briefing, the fly-over, the ground, the debrief. The engine runs at fifty steps a second
  * of game time (or forty, or sixty: Settings), whatever the screen's rate. */
 "use strict";
 (() => {
-  const E = AP.Engine, C = AP.C, UI = AP.UI, esc = AP.esc, $ = id => document.getElementById(id);
+  const E = AP.Engine, C = AP.C, UI = AP.UI, $ = id => document.getElementById(id);
   const game = AP.game = { mode: "boot", S: null, run: null, ui: { mapView: false, mapY: null, aids: {} }, step: 20, acc: 0, last: 0, overAt: 0, titleT: 0 };
 
-  /* ---- sound on and off (STANDARD.md §8) ---- */
-  const readMuted = () => { try { return globalThis.localStorage.getItem(AP.KEY_MUTED) === "1"; } catch (e) { return false; } };
-  AP.SFX.muted = readMuted();
+  /* ---- sound on and off (STANDARD.md §8), and the music on its own (§14) ---- */
+  const readFlag = (k, d) => { try { const v = globalThis.localStorage.getItem(k); return v === null ? d : v === "1"; } catch (e) { return d; } };
+  const writeFlag = (k, on) => { try { globalThis.localStorage.setItem(k, on ? "1" : "0"); } catch (e) { /* no storage */ } };
+  AP.SFX.muted = readFlag(AP.KEY_MUTED, false);
+  AP.SFX.musicOn = readFlag(AP.KEY_MUSIC, true);
   game.toggleMute = () => {
     AP.SFX.unlock();
     AP.SFX.setMuted(!AP.SFX.muted);
-    try { globalThis.localStorage.setItem("airbornepuma_muted_v1", AP.SFX.muted ? "1" : "0"); } catch (e) { /* no storage */ }
+    writeFlag(AP.KEY_MUTED, AP.SFX.muted);
     syncSound();
     if (!AP.SFX.muted) { AP.SFX.play("menu"); titleTune(); }
     if (game.mode === "play") AP.HUD.toast(AP.SFX.muted ? "Sound off" : "Sound on", 15, 1200);
   };
-  function syncSound() { const b = $("snd"); if (b) { b.setAttribute("aria-pressed", String(!AP.SFX.muted)); b.classList.toggle("muted", AP.SFX.muted); } }
+  game.setMusic = on => {
+    AP.SFX.unlock();
+    AP.SFX.setMusic(on);
+    writeFlag(AP.KEY_MUSIC, on);
+    syncSound();
+    if (on) titleTune();
+  };
+  /* the corner's Sound in a mission, and the title's switches */
+  function syncSound() { const b = $("snd"); if (b) { b.setAttribute("aria-pressed", String(!AP.SFX.muted)); b.classList.toggle("muted", AP.SFX.muted); } if (game.sw) game.sw.refresh(); }
   /* a phone or a small window: the page says so and stays quiet */
   const SMALL = matchMedia("(max-width: 759px), (max-height: 479px)");
-  /* the title tune runs from the boot's first line, its drum intro under the logo, so the title comes in
-     on the tune itself. The browser holds a page's sound until its first key or click: the tune waits at
-     its first bar until then, and wake() lets it go. A press during the boot skips it, and one after it
-     comes too late for the logo: either way the intro is dropped and the tune starts at its first note */
-  let booting = false;
-  const titleTune = () => { if ((game.mode === "boot" || game.mode === "title") && !AP.SFX.tune && !SMALL.matches) AP.SFX.startTune(booting); };
-  const wake = () => {
-    const late = AP.SFX.tune && AP.SFX.tune.intro && (booting || AP.SFX.ctx.state === "suspended");
-    AP.SFX.unlock();
-    if (late) { booting = false; AP.SFX.stopTune(true); }
-    titleTune();
-  };
+  /* the title theme: on the title, never during its entrance (gk-intro's onTitle starts it then, with its count-in),
+     and not on a small screen. wake() lets the browser's sound go on any key or click, and starts the theme
+     where the title is up without it */
+  const march = (countIn = false) => { if (game.mode === "title" && !AP.SFX.tune && !SMALL.matches) AP.SFX.startTune(countIn); };
+  const titleTune = () => { if (!game.entering) march(); };
+  const wake = () => { AP.SFX.unlock(); titleTune(); };
 
   game.applySpeed = () => { game.step = 1000 / (AP.SPEEDS[AP.prefs.speed] || AP.SPEEDS.classic)[1]; };
   game.applyLook = () => { $("stage").classList.toggle("scan", !!AP.prefs.scanlines); };
@@ -63,30 +69,14 @@
       ],
     };
   }
-  /* the title: the battlefield behind, the name, and the menu in a panel of
-   * its own: a key, the item, what it says about itself; Settings, Help and
-   * About on one line under the rest */
-  function titleHTML(cfg) {
-    const items = cfg.items.filter(Boolean), gap = items.indexOf("gap");
-    const main = items.slice(0, gap), util = items.slice(gap + 1);
-    let i = 0;
-    const btn = (it, big) => `<button data-act="${it.act}" class="pr${it.act === cfg.primary ? " dflt" : ""}" style="--i:${i++}"><kbd>${esc(it.key)}</kbd><span class="lbl">${esc(it.label)}</span>` +
-      (big && it.meta ? `<span class="meta">${esc(it.meta)}</span>` : "") + "</button>";
-    const [a, b] = cfg.name.split(" ");
-    return `<div class="ap-title">
-      <canvas class="ap-scene" aria-hidden="true"></canvas><div class="ap-shade" aria-hidden="true"></div>
-      <main>
-        <h1 class="ap-mark" aria-label="${esc(cfg.name)}"><span>${esc(a)}</span> <span class="puma">${esc(b)}</span></h1>
-        <p class="ap-sub">Behind Enemy Lines</p>
-        <nav class="ap-menu" aria-label="Main menu">${main.map(it => btn(it, true)).join("")}<div class="util">${util.map(it => btn(it, false)).join("")}</div></nav>
-      </main>
-      <footer class="ap-foot"><span class="gk-credit">${UI.CREDIT}</span></footer>
-    </div>`;
-  }
+  /* the title: the canon default (@gk-title v0.4, which was this game's own made the default) over the
+   * battlefield, in css/airbornepuma.css's colours: the name, the menu in a panel of its own (a key, the item,
+   * what it says about itself; Settings, Help and About on one line under the rest) */
   function openTitle() {
     game.mode = "title";
     const el = $("title");
-    el.innerHTML = titleHTML(titleCfg());
+    el.innerHTML = titleHTML(Object.assign(titleCfg(), { sub: "Behind Enemy Lines", scene: true }));
+    el.querySelector(".scene").innerHTML = '<canvas class="ap-scene"></canvas>';
     el.hidden = false;
     $("game").hidden = true;
     sizeScene();
@@ -99,23 +89,34 @@
     const k = Math.max(2, Math.round(Math.min(innerWidth / AP.K.VW, innerHeight / AP.K.VH)));
     cv.width = Math.ceil(innerWidth / k); cv.height = Math.ceil(innerHeight / k);
   }
-  /* the entrance: the menu prints in, the default has the focus */
-  function revealTitle(print = true) {
-    const t = document.querySelector("#title .ap-title");
+  /* back on the title: the menu prints in and the picture's Osprey makes its pass (the name stays put, as it
+     always has here), or, redrawn in place, only the focus */
+  function showTitle(print = true) {
+    const t = document.querySelector("#title .gk-title");
     if (!t) return;
-    /* a fresh arrival: the menu prints in, and the picture's Osprey makes its pass */
-    if (print) { t.classList.add("ap-print"); game.titleT = 0; }
-    const b = t.querySelector(".ap-menu .dflt") || t.querySelector(".ap-menu button");
+    if (print) { t.classList.add("gk-rise"); game.titleT = 0; }
+    const b = t.querySelector(".gk-primary") || t.querySelector(".gk-menu button");
     if (b) b.focus({ preventScroll: true });
   }
-  game.refreshTitle = () => { if (game.mode !== "title") return; openTitle(); revealTitle(false); };
+  /* the opening, the first time the title shows (gk-intro's finish): the battlefield alone, "Airborne" then
+     "Puma" fading in over the theme's bar of rising wind and rotors, and the menu landing on its first hit
+     (sfx.js's COUNT_IN, one bar at 84, 2.86 s, after its 0.1 s lead). A key or a click skips to the end of it */
+  const MENU_AT = Math.round((0.1 + AP.SFX.COUNT_IN) * 1000);
+  const INTRO = { name: 600, step: 700, menu: MENU_AT, done: MENU_AT + 1200 };
+  /* the integrated title (§14): the credit under the menu, the switches top right, a tick on every row the
+     pointer or the arrows reach. finish() does it the first time; each later mount of the title does it again */
+  const toggles = { sound: { get: () => !AP.SFX.muted, set: on => { if (on === AP.SFX.muted) game.toggleMute(); } },
+    music: { get: () => AP.SFX.musicOn, set: on => game.setMusic(on) } };
+  const tick = () => gkTick(AP.SFX.ctx, AP.SFX.dry);
+  function integrate() { const t = document.querySelector("#title .gk-title"); if (t) game.sw = gkIntegrate(t, { toggles, tick }); }
+  game.refreshTitle = () => { if (game.mode !== "title") return; openTitle(); integrate(); showTitle(false); };
   game.toTitle = () => {
     UI.close(true);
     game.S = null; game.run = null; game.ui.mapView = false;
     AP.SFX.stopLoops();
     AP.Input.clear();
-    openTitle(); revealTitle();
-    if (!SMALL.matches) AP.SFX.startTune();
+    openTitle(); integrate(); showTitle();
+    march();
   };
   async function titleAct(a) {
     AP.SFX.unlock();
@@ -130,7 +131,7 @@
   function titleKey(ev) {
     const k = ev.key.length === 1 ? ev.key.toLowerCase() : ev.key;
     if (k === "Enter" || k === " " || k === "Tab" || k === "Shift") return;
-    const menu = document.querySelector("#title .ap-menu"), hit = menu && titleKeyButton(menu, k);
+    const menu = document.querySelector("#title .gk-menu"), hit = menu && titleKeyButton(menu, k);
     if (hit) { ev.preventDefault(); titleAct(hit.dataset.act); return; }
     if (menu) titleArrow(menu, ev);
   }
@@ -321,6 +322,9 @@
   /* ---- keys ---- */
   /* on the window, ahead of the boot, which keeps the key that skips it from the document */
   addEventListener("keydown", wake, true);
+  /* a click that skips the entrance is spent on it (gk-intro keeps it from the page); note when it came, so the
+     click it makes cannot land on a row that was not there when it was pressed */
+  addEventListener("pointerdown", () => { if (game.entering) game.skippedAt = performance.now(); }, true);
   document.addEventListener("keydown", ev => {
     if (ev.ctrlKey || ev.metaKey || ev.altKey) return;
     if (UI.sheet) { UI.key(ev); return; }
@@ -367,7 +371,7 @@
     if (document.querySelector(".ap-ask") && !b.closest(".ap-ask")) return;
     b.focus({ preventScroll: true });
   });
-  $("title").addEventListener("click", ev => { const b = ev.target.closest("[data-act]"); if (b) titleAct(b.dataset.act); });
+  $("title").addEventListener("click", ev => { const b = ev.target.closest("[data-act]"); if (b && !(performance.now() - (game.skippedAt || 0) < 600)) titleAct(b.dataset.act); });
   $("snd").addEventListener("click", () => game.toggleMute());
   $("pausebtn").addEventListener("click", () => game.pause());
 
@@ -387,7 +391,7 @@
     AP.buildArt(AP.prefs.palette);
     AP.Render.init($("screen"));
     game.applySpeed(); game.applyLook(); syncAids(); syncSound();
-    injectTitleCSS();     /* the boot's; the title and the sheets are css/airbornepuma.css */
+    injectTitleCSS();     /* the boot's and the title's; the title's colours and the sheets are css/airbornepuma.css */
     fit();
     const q = new URLSearchParams(location.search);
     if (q.has("play")) {
@@ -403,15 +407,37 @@
       /* &pause=1 opens on the pause menu */
       if (q.has("pause")) game.pause();
     } else {
-      /* the tune from here; the ?play debug runs stay silent */
-      booting = !SMALL.matches && !reduced();
-      wake();
-      const run = SMALL.matches ? { finish: async () => {}, cancel() {} } : runBoot({ lines: [bootReloadLine(), "terrain: ok", "osprey on station"] });
+      const lines = [bootReloadLine(), "terrain: ok", "osprey on station"];
+      /* the integrated intro, but not on a small screen (the page asks for a desktop) or a picture of a sheet
+         (?sheet, ?demo): those keep the plain boot. The ?play debug runs above stay silent */
+      const plain = SMALL.matches || q.has("sheet") || q.has("demo");
+      const intro = plain ? null : startIntro({ lines, audio: () => { AP.SFX.unlock(); return AP.SFX.ctx; } });
+      const run = intro ? null : SMALL.matches ? { finish: async () => {}, cancel() {} } : runBoot({ lines });
+      if (!intro) wake();
       openTitle();
       const saved = AP.loadMission(), n = AP.Roster.list().length;
-      run.finish([saved ? "a mission in progress" : n ? `${n} ranger${n === 1 ? "" : "s"} on the roster` : "roster: empty"]).then(() => {
-        booting = false;
-        revealTitle();
+      const more = [saved ? "a mission in progress" : n ? `${n} ranger${n === 1 ? "" : "s"} on the roster` : "roster: empty"];
+      if (intro) {
+        /* debug: &hold=always holds for the press even where the browser would play sound already (the in-app
+           browser, a launch from the arcade) */
+        game.entering = true;
+        intro.finish({ more, name: "lines", timing: INTRO, hold: q.get("hold") === "always" ? "always" : "auto", toggles, tick,
+          onContinue: wake,
+          /* the title fades up: the Osprey starts its pass, and the theme its count-in (none for a title that
+             shows at once and still, under reduced motion) */
+          onTitle: () => { game.titleT = 0; march(game.entering && !reduced()); },
+          onDone: () => {
+            game.entering = false;
+            /* skipped: the count-in is cut and the theme starts at its first bar, with the menu */
+            const tn = AP.SFX.tune;
+            if (tn && tn.intro && AP.SFX.ctx.currentTime < tn.t0 - 0.15) { AP.SFX.stopTune(true); march(); }
+            else titleTune();
+          } }).then(r => { game.sw = r.toggles; });
+        return startLoop();
+      }
+      integrate();
+      run.finish(more).then(() => {
+        showTitle();
         /* debug, for screenshots: ?sheet=roster opens the veteran roster */
         if (q.get("sheet") === "roster") UI.roster();
         /* ?demo=roster or ?demo=kia: three made-up veterans, in memory only (never saved), for the portraits */
@@ -425,8 +451,8 @@
         }
       });
     }
-    game.last = performance.now();
-    requestAnimationFrame(frame);
+    startLoop();
   }
+  function startLoop() { game.last = performance.now(); requestAnimationFrame(frame); }
   boot();
 })();
