@@ -164,11 +164,17 @@
   A.startTune = (intro = false) => {
     if (A.muted || !A.musicOn || !A.ctx || A.tune) return;
     const a = A.ctx, g = a.createGain();
-    g.gain.value = 0.5;
+    /* levelled against the boot's meow, which ends just as the count-in starts: the count-in and the
+       insertion sit level with it, about -19 LUFS, and the fight a few dB over (measured offline). At
+       0.5 it was 11 to 14 dB under the cat */
+    g.gain.value = 2;
     /* the top taken off the whole of it: nothing in this is bright */
     const shelf = a.createBiquadFilter(); shelf.type = "highshelf"; shelf.frequency.value = 2000; shelf.gain.value = -12;
     const top = a.createBiquadFilter(); top.type = "lowpass"; top.frequency.value = 4000; top.Q.value = 0.5;
-    g.connect(shelf); shelf.connect(top); top.connect(A.music);
+    /* a limiter, so the fight's hits peak at about -6 dBFS rather than touching 0 */
+    const lim = a.createDynamicsCompressor();
+    lim.threshold.value = -6; lim.knee.value = 3; lim.ratio.value = 12; lim.attack.value = 0.002; lim.release.value = 0.15;
+    g.connect(shelf); shelf.connect(top); top.connect(lim); lim.connect(A.music);
     /* a long, dark room for the horns, the strings and the drums */
     const room = a.createDelay(1), fb = a.createGain(), wet = a.createGain(), damp = a.createBiquadFilter();
     room.delayTime.value = 0.23; fb.gain.value = 0.38; wet.gain.value = 0.22; damp.type = "lowpass"; damp.frequency.value = 1100;
